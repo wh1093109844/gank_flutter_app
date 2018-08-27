@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-
+import 'contrack.dart';
+import 'presenter/home_presenter_impl.dart';
 void main() => runApp(new MyApp());
 
 class MyApp extends StatelessWidget {
@@ -39,11 +40,26 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _MyHomePageState createState() {
+    _MyHomePageState pageState = new _MyHomePageState();
+    new HomePresenterImpl(pageState);
+    return pageState;
+  }
 }
-
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin implements HomeView {
   int _counter = 0;
+  
+  TabController _tabController;
+  
+  @override
+  void initState() {
+      _tabController = new TabController(length: typeList?.length ?? 0, vsync: this);
+  }
+
+  void dispose() {
+    super.dispose();
+    _tabController.dispose();
+  }
 
   void _incrementCounter() {
     setState(() {
@@ -64,12 +80,13 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
+    List<Widget> tabWidgets = typeList?.map((tab) => new Container(child: new Center(child: new Text(tab)), height: 48.0,)).toList() ?? [];
     return new Scaffold(
       appBar: new AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: new Text(widget.title),
-          bottom: new TabBar(tabs: null),
+        bottom: new TabBar(tabs: tabWidgets, controller: _tabController, isScrollable: true, ),
       ),
       body: new Center(
         // Center is a layout widget. It takes a single child and positions it
@@ -109,5 +126,20 @@ class _MyHomePageState extends State<MyHomePage> {
         new Text('今日干货')
       ],)),// This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  @override
+  HomePrsenter presenter;
+  List<String> typeList;
+
+  @override
+  void setPresenter(HomePrsenter presenter) {
+    this.presenter = presenter;
+    presenter.start();
+  }
+
+  @override
+  void setTabList(List<String> list) {
+      this.typeList = list;
   }
 }

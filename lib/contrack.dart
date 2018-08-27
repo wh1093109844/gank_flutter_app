@@ -20,3 +20,8 @@ abstract class MainView extends BaseView<MainPresenter> {
 	void showMessage(String message);
 	void showProgress(bool isShow);
 }
+
+abstract class HomePrsenter extends BasePresenter {}
+abstract class HomeView extends BaseView<HomePrsenter> {
+	void setTabList(List<String> list);
+}
