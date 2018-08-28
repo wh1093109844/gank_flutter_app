@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gank_flutter_app/entry/gank.dart';
 import 'contrack.dart';
 import 'presenter/home_presenter_impl.dart';
 void main() => runApp(new MyApp());
@@ -142,4 +143,59 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   void setTabList(List<String> list) {
       this.typeList = list;
   }
+}
+
+class ListPage extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+  }
+}
+
+class _ListPageState extends State<ListPage> implements MainView {
+
+  bool showProgressBar;
+  List<Gank> gankList = [];
+  BuildContext context;
+
+  @override
+  MainPresenter presenter;
+
+  @override
+  Widget build(BuildContext context) {
+    return new Container(
+      child: new ListView.builder(itemBuilder: (context, index) {
+        return new Card(child: new Text(gankList[index].who),);
+      }),
+    );
+  }
+
+  @override
+  void setGankList(List<Gank> gankList) {
+    setState(() {
+      this.gankList.addAll(gankList);
+    });
+  }
+
+  @override
+  void setPresenter(MainPresenter presenter) {
+    this.presenter = presenter;
+  }
+
+  @override
+  void showMessage(String message) {
+    Scaffold.of(context).showSnackBar(new SnackBar(content: new Text(message)));
+  }
+
+  @override
+  void showProgress(bool isShow) {
+    if (!mounted) {
+      showProgressBar = isShow;
+    } else {
+      setState((){
+        showProgressBar = isShow;
+      });
+    }
+  }
+
 }

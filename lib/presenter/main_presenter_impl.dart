@@ -21,7 +21,7 @@ class MainPresenterImpl extends MainPresenter {
 
     void fetchGankList(String type, int pageNum) {
     	view.showProgress(true);
-    	
+
     }
 
 }
