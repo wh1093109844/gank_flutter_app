@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:gank_flutter_app/entry/gank.dart';
 import 'contrack.dart';
 import 'presenter/home_presenter_impl.dart';
+import 'presenter/main_presenter_impl.dart';
+import 'entry/gank.dart';
 void main() => runApp(new MyApp());
 
 class MyApp extends StatelessWidget {
@@ -51,10 +52,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   int _counter = 0;
   
   TabController _tabController;
+  PageController _pageController;
   
   @override
   void initState() {
       _tabController = new TabController(length: typeList?.length ?? 0, vsync: this);
+      _pageController = new PageController();
   }
 
   void dispose() {
@@ -82,6 +85,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     List<Widget> tabWidgets = typeList?.map((tab) => new Container(child: new Center(child: new Text(tab)), height: 48.0,)).toList() ?? [];
+    List<Widget> viewPages = typeList?.map((tab) => new ListPage(tab)).toList();
     return new Scaffold(
       appBar: new AppBar(
         // Here we take the value from the MyHomePage object that was created by
@@ -89,35 +93,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         title: new Text(widget.title),
         bottom: new TabBar(tabs: tabWidgets, controller: _tabController, isScrollable: true, ),
       ),
-      body: new Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: new Column(
-          // Column is also layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug paint" (press "p" in the console where you ran
-          // "flutter run", or select "Toggle Debug Paint" from the Flutter tool
-          // window in IntelliJ) to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            new Text(
-              'You have pushed the button this many times:',
-            ),
-            new Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-          ],
-        ),
-      ),
+      body: new TabBarView(children: viewPages, controller: _tabController,),
       floatingActionButton: new FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
@@ -146,9 +122,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 }
 
 class ListPage extends StatefulWidget {
+  String type;
+  ListPage(this.type);
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
+    _ListPageState state = new _ListPageState();
+    new MainPresenterImpl(state, type);
+    return state;
   }
 }
 
@@ -162,11 +142,23 @@ class _ListPageState extends State<ListPage> implements MainView {
   MainPresenter presenter;
 
   @override
+  void initState() {
+    super.initState();
+    presenter.start();
+  }
+
+  @override
   Widget build(BuildContext context) {
+      Widget body;
+      if (gankList.isEmpty) {
+          body = new Text('empty');
+      } else {
+          body = new ListView.builder(itemBuilder: (context, index) {
+              return new Card(child: new Text(gankList[index].who),);
+          }, itemCount: gankList.length,);
+      }
     return new Container(
-      child: new ListView.builder(itemBuilder: (context, index) {
-        return new Card(child: new Text(gankList[index].who),);
-      }),
+      child: body,
     );
   }
 
