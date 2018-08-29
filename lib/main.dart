@@ -3,6 +3,8 @@ import 'contrack.dart';
 import 'presenter/home_presenter_impl.dart';
 import 'presenter/main_presenter_impl.dart';
 import 'entry/gank.dart';
+import 'card/image_card.dart';
+import 'const.dart';
 void main() => runApp(new MyApp());
 
 class MyApp extends StatelessWidget {
@@ -132,11 +134,11 @@ class ListPage extends StatefulWidget {
   }
 }
 
-class _ListPageState extends State<ListPage> implements MainView {
+class _ListPageState extends State<ListPage> with AutomaticKeepAliveClientMixin<ListPage> implements MainView {
 
   bool showProgressBar;
   List<Gank> gankList = [];
-  BuildContext context;
+  ScrollController _scrollController;
 
   @override
   MainPresenter presenter;
@@ -145,6 +147,12 @@ class _ListPageState extends State<ListPage> implements MainView {
   void initState() {
     super.initState();
     presenter.start();
+    _scrollController = new ScrollController();
+    _scrollController.addListener(() {
+    	if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+    		presenter.fetch();
+	    }
+    });
   }
 
   @override
@@ -154,8 +162,12 @@ class _ListPageState extends State<ListPage> implements MainView {
           body = new Text('empty');
       } else {
           body = new ListView.builder(itemBuilder: (context, index) {
+          	    Gank gank = gankList[index];
+          	    if (gank.type == Const.typeWelfare) {
+          	    	return new ImageCard(gank);
+                }
               return new Card(child: new Text(gankList[index].who),);
-          }, itemCount: gankList.length,);
+          }, itemCount: gankList.length, controller: _scrollController,);
       }
     return new Container(
       child: body,
@@ -189,5 +201,9 @@ class _ListPageState extends State<ListPage> implements MainView {
       });
     }
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 
 }

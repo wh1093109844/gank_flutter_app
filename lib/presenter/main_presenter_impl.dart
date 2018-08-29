@@ -15,11 +15,11 @@ class MainPresenterImpl extends MainPresenter {
 
     @override
     void start() {
-        fetch(type);
+        fetch();
     }
 
     @override
-    void fetch(String type, {refresh: false}) {
+    void fetch({refresh: false}) {
         pageNum = refresh ? 0 : pageNum + 1;
         fetchGankList(type, pageNum);
     }

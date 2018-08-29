@@ -12,7 +12,7 @@ abstract class BaseView<T extends BasePresenter> {
 }
 
 abstract class MainPresenter extends BasePresenter {
-	void fetch(String type, {refresh: false});
+	void fetch({refresh: false});
 }
 
 abstract class MainView extends BaseView<MainPresenter> {
