@@ -4,6 +4,7 @@ import 'presenter/home_presenter_impl.dart';
 import 'presenter/main_presenter_impl.dart';
 import 'entry/gank.dart';
 import 'card/image_card.dart';
+import 'card/text_card.dart';
 import 'const.dart';
 void main() => runApp(new MyApp());
 
@@ -165,6 +166,8 @@ class _ListPageState extends State<ListPage> with AutomaticKeepAliveClientMixin<
           	    Gank gank = gankList[index];
           	    if (gank.type == Const.typeWelfare) {
           	    	return new ImageCard(gank);
+                } else {
+          	        return new TextCard(gank);
                 }
               return new Card(child: new Text(gankList[index].who),);
           }, itemCount: gankList.length, controller: _scrollController,);
