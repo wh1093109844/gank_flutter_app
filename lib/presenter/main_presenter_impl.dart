@@ -3,7 +3,7 @@ import '../repository/remote_repository.dart';
 import '../repository/remote_repository_impl.dart';
 class MainPresenterImpl extends MainPresenter {
 
-	static const pageSize = 20;
+	static const pageSize = 100;
 	int pageNum = 0;
 
 	MainView view;

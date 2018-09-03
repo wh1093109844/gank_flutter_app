@@ -169,7 +169,6 @@ class _ListPageState extends State<ListPage> with AutomaticKeepAliveClientMixin<
                 } else {
           	        return new TextCard(gank);
                 }
-              return new Card(child: new Text(gankList[index].who),);
           }, itemCount: gankList.length, controller: _scrollController,);
       }
     return new Container(
