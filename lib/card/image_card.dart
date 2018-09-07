@@ -27,6 +27,7 @@ class ImageCard extends StatelessWidget {
     return new Card(
       child: new Container(
           constraints: new BoxConstraints(),
+          decoration: new BoxDecoration(image: new DecorationImage(image: new AssetImage('../res/images/place_holder.jpg'))),
           child: new Stack(
             children: widgetList,
           )),
