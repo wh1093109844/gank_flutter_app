@@ -8,9 +8,9 @@ class ImageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: implement build
     List<Widget> widgetList = [];
-    widgetList.add(new FadeInImage.assetNetwork(
-        placeholder: '../res/images/place_holder.jpg', image: gank.url));
+    widgetList.add(new Image.network(gank.url));
     if (gank.who != null && gank.who.isNotEmpty) {
       widgetList.add(new Positioned(
         child: new Container(
@@ -33,4 +33,5 @@ class ImageCard extends StatelessWidget {
           )),
     );
   }
+
 }
