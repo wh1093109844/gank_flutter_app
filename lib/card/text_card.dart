@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../entry/gank.dart';
+import 'package:gank_flutter_app/entry/gank.dart';
 
 class TextCard extends StatelessWidget {
 

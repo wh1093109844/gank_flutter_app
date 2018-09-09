@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'contrack.dart';
-import 'presenter/home_presenter_impl.dart';
-import 'presenter/main_presenter_impl.dart';
-import 'entry/gank.dart';
-import 'card/image_card.dart';
-import 'card/text_card.dart';
-import 'const.dart';
+import 'package:gank_flutter_app/const.dart';
+import 'package:gank_flutter_app/contrack.dart';
+import 'package:gank_flutter_app/pages/default_list_page.dart';
+import 'package:gank_flutter_app/pages/image_list_page.dart';
+import 'package:gank_flutter_app/presenter/home_presenter_impl.dart';
+
 void main() => runApp(new MyApp());
 
 class MyApp extends StatelessWidget {
@@ -88,7 +87,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     List<Widget> tabWidgets = typeList?.map((tab) => new Container(child: new Center(child: new Text(tab)), height: 48.0,)).toList() ?? [];
-    List<Widget> viewPages = typeList?.map((tab) => new ListPage(tab)).toList();
+    List<Widget> viewPages = typeList?.map((tab){
+      if (tab == Const.typeWelfare) {
+        return new ImageListPage(tab);
+      } else {
+        return new DefaultListPage(tab);
+      }
+    }).toList();
     return new Scaffold(
       appBar: new AppBar(
         // Here we take the value from the MyHomePage object that was created by
@@ -122,90 +127,4 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   void setTabList(List<String> list) {
       this.typeList = list;
   }
-}
-
-class ListPage extends StatefulWidget {
-  String type;
-  ListPage(this.type);
-  @override
-  State<StatefulWidget> createState() {
-    _ListPageState state = new _ListPageState();
-    new MainPresenterImpl(state, type);
-    return state;
-  }
-}
-
-class _ListPageState extends State<ListPage> with AutomaticKeepAliveClientMixin<ListPage> implements MainView {
-
-  bool showProgressBar;
-  List<Gank> gankList = [];
-  ScrollController _scrollController;
-
-  @override
-  MainPresenter presenter;
-
-  @override
-  void initState() {
-    super.initState();
-    presenter.start();
-    _scrollController = new ScrollController();
-    _scrollController.addListener(() {
-    	if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-    		presenter.fetch();
-	    }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-      Widget body;
-      if (gankList.isEmpty) {
-          body = new Text('empty');
-      } else {
-          body = new ListView.builder(itemBuilder: (context, index) {
-          	    Gank gank = gankList[index];
-          	    if (gank.type == Const.typeWelfare) {
-          	    	return new ImageCard(gank);
-                } else {
-          	        return new TextCard(gank);
-                }
-          }, itemCount: gankList.length, controller: _scrollController,);
-      }
-    return new Container(
-      child: body,
-    );
-  }
-
-  @override
-  void setGankList(List<Gank> gankList) {
-    setState(() {
-      this.gankList.addAll(gankList);
-    });
-  }
-
-  @override
-  void setPresenter(MainPresenter presenter) {
-    this.presenter = presenter;
-  }
-
-  @override
-  void showMessage(String message) {
-    Scaffold.of(context).showSnackBar(new SnackBar(content: new Text(message)));
-  }
-
-  @override
-  void showProgress(bool isShow) {
-    if (!mounted) {
-      showProgressBar = isShow;
-    } else {
-      setState((){
-        showProgressBar = isShow;
-      });
-    }
-  }
-
-  @override
-  // TODO: implement wantKeepAlive
-  bool get wantKeepAlive => true;
-
 }

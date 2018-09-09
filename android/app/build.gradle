@@ -38,7 +38,7 @@ android {
 
     signingConfigs {
         release {
-            storeFile new File('../gank_flutter.jks')
+            storeFile file("../gank_flutter.jks")
             keyPassword '12345678'
             storePassword '12345678'
             keyAlias 'gank'
