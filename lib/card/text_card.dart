@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 import '../entry/gank.dart';
 
-class TextCard extends StatelessWidget {
+class TextCard extends StatefulWidget {
 
     Gank gank;
 
     TextCard(this.gank);
 
+  @override
+  TextCardState createState() {
+    return new TextCardState();
+  }
+
+}
+
+class TextCardState extends State<TextCard> {
   @override
   Widget build(BuildContext context) {
       List<Widget> contentList = [
@@ -16,7 +24,7 @@ class TextCard extends StatelessWidget {
                           new Padding(
                                   padding: EdgeInsets.only(bottom: 10.0),
                                   child: new Text(
-                                      gank.who,
+                                      widget.gank.who,
                                       style: new TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 15.0,
@@ -25,7 +33,7 @@ class TextCard extends StatelessWidget {
                                   ),
                           ),
                           new Text(
-                              gank.desc,
+                              widget.gank.desc,
                               maxLines: 2,
                               ),
                       ],
@@ -33,11 +41,11 @@ class TextCard extends StatelessWidget {
                       ),
                   ),
       ];
-      if (gank.images != null && gank.images?.isNotEmpty) {
+      if (widget.gank.images != null && widget.gank.images?.isNotEmpty) {
           contentList.add(new Padding(
                   padding: EdgeInsets.only(left: 10.0),
                   child: new Image.network(
-                      gank.images[0],
+                      widget.gank.images[0],
                       width: 120.0,
                       height: 60.0,
                       fit: BoxFit.cover,
@@ -51,5 +59,4 @@ class TextCard extends StatelessWidget {
             padding: EdgeInsets.all(10.0),),
         );
   }
-
 }
