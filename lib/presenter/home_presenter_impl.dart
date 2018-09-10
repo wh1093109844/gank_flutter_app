@@ -1,5 +1,5 @@
-import '../const.dart';
-import '../contrack.dart';
+import 'package:gank_flutter_app/const.dart';
+import 'package:gank_flutter_app/contrack.dart';
 
 class HomePresenterImpl extends HomePrsenter {
 

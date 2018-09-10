@@ -1,4 +1,5 @@
-import 'entry/gank.dart';
+
+import 'package:gank_flutter_app/entry/gank.dart';
 
 abstract class BasePresenter {
 	void start();

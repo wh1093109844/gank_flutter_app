@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
-import '../entry/gank.dart';
-
-import 'remote_repository.dart';
-import '../entry/gank_response.dart';
+import 'package:gank_flutter_app/entry/gank.dart';
+import 'package:gank_flutter_app/entry/gank_response.dart';
+import 'package:gank_flutter_app/repository/remote_repository.dart';
 
 class GankRepositoryImpl extends GankRepository {
 
