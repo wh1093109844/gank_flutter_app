@@ -4,6 +4,7 @@ import 'package:gank_flutter_app/card/text_card.dart';
 import 'package:gank_flutter_app/const.dart';
 import 'package:gank_flutter_app/entry/gank.dart';
 import 'package:gank_flutter_app/pages/abs_list_page_state.dart';
+import 'package:gank_flutter_app/pages/image_page.dart';
 
 class ImageListPage extends AbsListPage {
   ImageListPage(String type) : super(type);
@@ -28,7 +29,8 @@ class _ImageListPageState extends AbsListPageState {
         child = new TextCard(gank);
       }
       return new InkWell(child: child, onTap: (){
-        Scaffold.of(context).showSnackBar(new SnackBar(content: new Text(gank.type)));
+        Navigator.of(context).push(new MaterialPageRoute(builder: (context) => new ImagePage(gank), fullscreenDialog: true));
+//        Scaffold.of(context).showSnackBar(new SnackBar(content: new Text(gank.type)));
       },);
     }, itemCount: gankList.length, controller: scrollController,);
   }
