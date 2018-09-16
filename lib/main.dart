@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gank_flutter_app/const.dart';
 import 'package:gank_flutter_app/contrack.dart';
@@ -5,7 +6,12 @@ import 'package:gank_flutter_app/pages/default_list_page.dart';
 import 'package:gank_flutter_app/pages/image_list_page.dart';
 import 'package:gank_flutter_app/presenter/home_presenter_impl.dart';
 
-void main() => runApp(new MyApp());
+void main() {
+  debugInstrumentationEnabled = true;
+  MaterialPageRoute.debugEnableFadingRoutes = true;
+
+  runApp(new MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.

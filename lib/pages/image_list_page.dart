@@ -24,14 +24,16 @@ class _ImageListPageState extends AbsListPageState {
       var child;
       Gank gank = gankList[index];
       if (gank.type == Const.typeWelfare) {
-        child = new ImageCard(gank);
+        return new ImageCard(gank, () {
+          Navigator.of(context).push(new MaterialPageRoute(builder: (context) => new ImagePage(gank)));
+        });
       } else {
-        child = new TextCard(gank);
+        return new TextCard(gank);
       }
-      return new InkWell(child: child, onTap: (){
-        Navigator.of(context).push(new MaterialPageRoute(builder: (context) => new ImagePage(gank), fullscreenDialog: true));
-//        Scaffold.of(context).showSnackBar(new SnackBar(content: new Text(gank.type)));
-      },);
+//      return new InkWell(child: child, onTap: (){
+//        Navigator.of(context).push(new MaterialPageRoute(builder: (context) => new ImagePage(gank), fullscreenDialog: true));
+////        Scaffold.of(context).showSnackBar(new SnackBar(content: new Text(gank.type)));
+//      },);
     }, itemCount: gankList.length, controller: scrollController,);
   }
 }

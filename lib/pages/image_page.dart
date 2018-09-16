@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gank_flutter_app/card/image_card.dart';
+import 'package:gank_flutter_app/const.dart';
 import 'package:gank_flutter_app/entry/gank.dart';
 
 class ImagePage extends StatelessWidget {
@@ -16,9 +18,9 @@ class ImagePage extends StatelessWidget {
         child: new Stack(
           children: <Widget>[
             Center(
-              child: new FadeInImage.assetNetwork(
-                  placeholder: 'res/images/place_holder.jpg',
-                  image: gank.url),
+              child: new PhotoHolder(gank.url, (){
+
+              }),
             ),
             new Positioned(
               child: new Container(
