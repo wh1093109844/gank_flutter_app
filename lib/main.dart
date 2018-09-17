@@ -1,13 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:gank_flutter_app/classify/classify_demo.dart';
 import 'package:gank_flutter_app/const.dart' as Const;
-import 'package:gank_flutter_app/contrack.dart';
-import 'package:gank_flutter_app/entry/gank.dart';
-import 'package:gank_flutter_app/pages/default_list_page.dart';
-import 'package:gank_flutter_app/pages/image_list_page.dart';
-import 'package:gank_flutter_app/pages/image_page.dart';
-import 'package:gank_flutter_app/pages/webview_page.dart';
-import 'package:gank_flutter_app/presenter/classify_presenter_impl.dart';
 
 void main() {
   debugInstrumentationEnabled = true;
@@ -33,120 +27,55 @@ class MyApp extends StatelessWidget {
         // counter didn't reset back to zero; the application is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: new MyHomePage(title: 'Flutter Demo Home Page'),
+      home: new MainPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
+class MainPage extends StatefulWidget {
   @override
-  _MyHomePageState createState() {
-    _MyHomePageState pageState = new _MyHomePageState();
-    new HomePresenterImpl(pageState);
-    return pageState;
-  }
+  _MainPageState createState() => _MainPageState();
 }
-class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin implements ClassifyView {
-  int _counter = 0;
-  
-  TabController _tabController;
-  PageController _pageController;
-  
+
+class _MainPageState extends State<MainPage> {
+
+  int current = 0;
+  List<Widget> widgets = [
+    new Container(),
+    new ClassifyDemo(category: Const.Const.classification),
+    new Container(),
+    new Container()
+  ];
+
   @override
   void initState() {
-      _tabController = new TabController(length: typeList?.length ?? 0, vsync: this);
-      _pageController = new PageController();
-  }
-
-  void dispose() {
-    super.dispose();
-    _tabController.dispose();
-  }
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+    // TODO: implement initState
+    super.initState();
+    widgets.add(new Container());
+    widgets.add(new ClassifyDemo(category: Const.Const.classification));
+    widgets.add(new Container());
+    widgets.add(new Container());
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    List<Widget> tabWidgets = typeList?.map((tab) => new Container(child: new Center(child: new Text(tab.code)), height: 48.0,)).toList() ?? [];
-    List<Widget> viewPages = typeList?.map((tab){
-      if (tab == Const.Const.welfare) {
-        return new ImageListPage(tab.code, onTapCallback: handleTap,);
-      } else {
-        return new DefaultListPage(tab.code, onTapCallback: handleTap,);
-      }
-    }).toList();
-    return new Scaffold(
-      appBar: new AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: new Text(widget.title),
-        bottom: new TabBar(tabs: tabWidgets, controller: _tabController, isScrollable: true, ),
-      ),
-      body: new TabBarView(children: viewPages, controller: _tabController,),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: new Icon(Icons.add),
-      ),
-      drawer: new Drawer(child: new ListView(children: <Widget>[
-        new Text('今日干货')
-      ],)),// This trailing comma makes auto-formatting nicer for build methods.
-    );
-  }
-  
-  void handleTap(Gank gank) {
-    if (gank == null) {
-      return;
-    }
-    MaterialPageRoute route = null;
-    if (gank.type == Const.Const.typeWelfare) {
-      route = new MaterialPageRoute(builder: (context) => new ImagePage(gank));
-    } else {
-      route = new MaterialPageRoute(builder: (context) => new WebviewPage(gank));
-    }
-    Navigator.of(context).push(route);
+    return Scaffold(
+        body: Column(
+          children: <Widget>[
+            Expanded(child: Container(
+              child: widgets[current],
+            )),
+            BottomNavigationBar(
+              items: Const.bottomNavigationBarItems,
+              onTap: handleBottomTap,
+            )
+          ],
+        ));
   }
 
-  @override
-  ClassifyPrsenter presenter;
-  List<Const.Category> typeList;
-
-  @override
-  void setPresenter(ClassifyPrsenter presenter) {
-    this.presenter = presenter;
-    presenter.start();
-  }
-
-  @override
-  void setTabList(List<Const.Category> list) {
-      this.typeList = list;
+  void handleBottomTap(int index) {
+    setState(() {
+      current = index;
+    });
   }
 }

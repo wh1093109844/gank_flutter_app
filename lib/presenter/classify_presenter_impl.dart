@@ -1,11 +1,11 @@
 import 'package:gank_flutter_app/const.dart';
 import 'package:gank_flutter_app/contrack.dart';
 
-class HomePresenterImpl extends ClassifyPrsenter {
+class ClassifyPresenterImpl extends ClassifyPrsenter {
 
     ClassifyView view;
 
-    HomePresenterImpl(this.view) {
+    ClassifyPresenterImpl(this.view) {
         view.setPresenter(this);
     }
 
