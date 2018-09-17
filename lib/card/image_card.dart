@@ -5,15 +5,13 @@ import 'package:gank_flutter_app/entry/gank.dart';
 class ImageCard extends StatelessWidget {
   Gank gank;
 
-  GestureTapCallback onTap;
-
-  ImageCard(this.gank, this.onTap);
+  ImageCard(this.gank);
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     List<Widget> widgetList = [];
-    widgetList.add(new PhotoHolder(gank.url, onTap));
+    widgetList.add(new PhotoHolder(gank.url));
     if (gank.who != null && gank.who.isNotEmpty) {
       widgetList.add(new Positioned(
         child: new Container(
@@ -41,23 +39,16 @@ class ImageCard extends StatelessWidget {
 class PhotoHolder extends StatelessWidget {
 
   String photo;
-  VoidCallback onTap;
-
-  PhotoHolder(this.photo, this.onTap);
+  PhotoHolder(this.photo);
 
   @override
   Widget build(BuildContext context) {
     return new Hero(
         tag: photo,
         child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: () {
-              print(photo);
-              this.onTap();
-            },
+            color: Colors.transparent,
             child: FadeInImage.assetNetwork(placeholder: 'res/images/place_holder.jpg', image: photo),
-          ),
-        ));
+            ),
+        );
   }
 }

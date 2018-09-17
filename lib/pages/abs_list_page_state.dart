@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gank_flutter_app/contrack.dart';
 import 'package:gank_flutter_app/entry/gank.dart';
-import 'package:gank_flutter_app/presenter/main_presenter_impl.dart';
+import 'package:gank_flutter_app/presenter/classify_list_presenter_impl.dart';
 
 abstract class AbsListPage extends StatefulWidget {
 
@@ -12,14 +12,14 @@ abstract class AbsListPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     var state = createListPageState();
-    new MainPresenterImpl(state, type);
+    new ClassifyListPresenterImpl(state, type);
     return state;
   }
 
   AbsListPageState createListPageState();
 }
 
-abstract class AbsListPageState<T extends AbsListPage> extends State<T> with AutomaticKeepAliveClientMixin<T> implements MainView {
+abstract class AbsListPageState<T extends AbsListPage> extends State<T> with AutomaticKeepAliveClientMixin<T> implements ClassifyListView {
   bool showProgressBar;
   List<Gank> gankList = [];
   ScrollController scrollController;
@@ -58,7 +58,7 @@ abstract class AbsListPageState<T extends AbsListPage> extends State<T> with Aut
   }
 
   @override
-  MainPresenter presenter;
+  ClassifyListPresenter presenter;
 
   @override
   void setGankList(List<Gank> gankList) {
@@ -68,7 +68,7 @@ abstract class AbsListPageState<T extends AbsListPage> extends State<T> with Aut
   }
 
   @override
-  void setPresenter(MainPresenter presenter) {
+  void setPresenter(ClassifyListPresenter presenter) {
     this.presenter = presenter;
   }
 

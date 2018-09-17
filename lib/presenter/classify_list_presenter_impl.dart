@@ -1,16 +1,17 @@
-import '../contrack.dart';
-import '../repository/remote_repository.dart';
-import '../repository/remote_repository_impl.dart';
-class MainPresenterImpl extends MainPresenter {
+import 'package:gank_flutter_app/contrack.dart';
+import 'package:gank_flutter_app/repository/remote_repository.dart';
+import 'package:gank_flutter_app/repository/remote_repository_impl.dart';
+
+class ClassifyListPresenterImpl extends ClassifyListPresenter {
 
 	static const pageSize = 50;
 	int pageNum = 0;
 
-	MainView view;
+	ClassifyListView view;
 	GankRepository repository = new GankRepositoryImpl();
     String type;
     bool _isLoading = false;
-	MainPresenterImpl(this.view, this.type) {
+	ClassifyListPresenterImpl(this.view, this.type) {
 	    view.setPresenter(this);
     }
 
@@ -42,5 +43,4 @@ class MainPresenterImpl extends MainPresenter {
         });
 
     }
-
 }

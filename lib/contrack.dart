@@ -1,4 +1,5 @@
 
+import 'package:gank_flutter_app/const.dart';
 import 'package:gank_flutter_app/entry/gank.dart';
 
 abstract class BasePresenter {
@@ -12,17 +13,17 @@ abstract class BaseView<T extends BasePresenter> {
 	}
 }
 
-abstract class MainPresenter extends BasePresenter {
+abstract class ClassifyListPresenter extends BasePresenter {
 	void fetch({refresh: false});
 }
 
-abstract class MainView extends BaseView<MainPresenter> {
+abstract class ClassifyListView extends BaseView<ClassifyListPresenter> {
 	void setGankList(List<Gank> gankList);
 	void showMessage(String message);
 	void showProgress(bool isShow);
 }
 
-abstract class HomePrsenter extends BasePresenter {}
-abstract class HomeView extends BaseView<HomePrsenter> {
-	void setTabList(List<String> list);
+abstract class ClassifyPrsenter extends BasePresenter {}
+abstract class ClassifyView extends BaseView<ClassifyPrsenter> {
+	void setTabList(List<Category> list);
 }

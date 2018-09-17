@@ -26,7 +26,7 @@ class _DefaultListPageState extends AbsListPageState<DefaultListPage> {
       var child;
       Gank gank = gankList[index];
       if (gank.type == Const.typeWelfare) {
-        child = new ImageCard(gank, (){});
+        child = new ImageCard(gank);
       } else {
         child = new TextCard(gank);
       }
@@ -36,5 +36,11 @@ class _DefaultListPageState extends AbsListPageState<DefaultListPage> {
         }
       },);
     }, itemCount: gankList.length, controller: scrollController,);
+  }
+
+  void handleTap(Gank gank) {
+    if (widget.onTapCallback != null) {
+      widget.onTapCallback(gank);
+    }
   }
 }
