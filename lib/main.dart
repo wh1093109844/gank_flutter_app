@@ -66,8 +66,10 @@ class _MainPageState extends State<MainPage> {
               child: widgets[current],
             )),
             BottomNavigationBar(
-              items: Const.bottomNavigationBarItems,
+              items: generBottomNavigationBarItems(),
               onTap: handleBottomTap,
+              fixedColor: Colors.black,
+              type: BottomNavigationBarType.fixed,
             )
           ],
         ));
@@ -77,5 +79,30 @@ class _MainPageState extends State<MainPage> {
     setState(() {
       current = index;
     });
+  }
+
+  List<BottomNavigationBarItem> generBottomNavigationBarItems() {
+    ThemeData theme = Theme.of(context);
+    Color selectColor = theme.textSelectionColor;
+    Color unselectColor = Colors.black38;
+    List<BottomNavigationBarItem> bottomNavigationBarItems = [
+      new BottomNavigationBarItem(
+          icon: new Icon(Icons.home, color: current == 0 ? selectColor : unselectColor),
+          title: new Text('首页', style: new TextStyle(color: current == 0 ? selectColor : unselectColor),)
+          ),
+      new BottomNavigationBarItem(
+          icon: new Icon(Icons.burst_mode, color: current == 1 ? selectColor : unselectColor),
+          title: new Text('分类数据', style: new TextStyle(color: current == 1 ? selectColor : unselectColor),)
+          ),
+      new BottomNavigationBarItem(
+          icon: new Icon(Icons.compare, color: current == 2 ? selectColor : unselectColor),
+          title: new Text('闲读', style: new TextStyle(color: current == 2 ? selectColor : unselectColor),)
+          ),
+      new BottomNavigationBarItem(
+          icon: new Icon(Icons.all_inclusive, color: current == 3 ? selectColor : unselectColor),
+          title: new Text('其他', style: new TextStyle(color: current == 3 ? selectColor : unselectColor),)
+          )
+    ];
+    return bottomNavigationBarItems;
   }
 }

@@ -22,7 +22,7 @@ class ClassifyDemo extends StatefulWidget {
   }
 }
 
-class _ClassifyDemoState extends State<ClassifyDemo> with SingleTickerProviderStateMixin implements ClassifyView {
+class _ClassifyDemoState extends State<ClassifyDemo> with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin<ClassifyDemo> implements ClassifyView {
 
   TabController _tabController;
 
@@ -82,4 +82,8 @@ class _ClassifyDemoState extends State<ClassifyDemo> with SingleTickerProviderSt
   void setTabList(List<Const.Category> list) {
     this.typeList = list;
   }
+
+  // TODO: implement wantKeepAlive
+  @override
+  bool get wantKeepAlive => true;
 }

@@ -40,22 +40,3 @@ class Category {
 	factory Category.sample(name) => new Category(name: name, code: name);
 
 }
-
-final List<BottomNavigationBarItem> bottomNavigationBarItems = [
-	new BottomNavigationBarItem(
-			icon: new Icon(Icons.home), 
-			title: new Text('首页')
-	),
-	new BottomNavigationBarItem(
-			icon: new Icon(Icons.burst_mode), 
-			title: new Text('分类数据')
-	),
-	new BottomNavigationBarItem(
-			icon: new Icon(Icons.compare),
-			title: new Text('闲读')
-	),
-	new BottomNavigationBarItem(
-			icon: new Icon(Icons.all_inclusive),
-			title: new Text('其他')
-	)
-];
