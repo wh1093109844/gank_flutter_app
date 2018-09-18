@@ -4,7 +4,7 @@ part 'gank_response.g.dart';
 @JsonSerializable()
 class GankResponse extends Object with _$GankResponseSerializerMixin {
 	bool error;
-	List<dynamic> results;
+	dynamic results;
 
 	GankResponse(this.error, this.results);
 

@@ -7,11 +7,11 @@ part of 'gank_response.dart';
 // **************************************************************************
 
 GankResponse _$GankResponseFromJson(Map<String, dynamic> json) =>
-    new GankResponse(json['error'] as bool, json['results'] as List);
+    new GankResponse(json['error'] as bool, json['results'] as dynamic);
 
 abstract class _$GankResponseSerializerMixin {
   bool get error;
-  List<dynamic> get results;
+  dynamic get results;
   Map<String, dynamic> toJson() =>
       <String, dynamic>{'error': error, 'results': results};
 }

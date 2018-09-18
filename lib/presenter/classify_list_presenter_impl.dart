@@ -17,7 +17,9 @@ class ClassifyListPresenterImpl extends ClassifyListPresenter {
 
     @override
     void start() {
+	    DateTime today = DateTime.now();
         fetch();
+        repository.fetchDataByDate(today.year, today.month, today.day);
     }
 
     @override

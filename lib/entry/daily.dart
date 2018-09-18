@@ -4,7 +4,9 @@ class Daily {
 	List<Gank> bannerList;
 	List<Gank> dataList;
 
-	Daily(this.bannerList, this.dataList);
+	Daily(this.bannerList, this.dataList) {
+	    _dataSort();
+    }
 
 	factory Daily.empty() => Daily([], []);
 
@@ -13,7 +15,19 @@ class Daily {
 			dataList = [];
 		}
 		dataList.addAll(list);
+		_dataSort();
 	}
 
-	void _comp
+	void _dataSort() {
+	    if (dataList == null) {
+	        return;
+        }
+	    dataList.sort(_sort);
+    }
+
+    int _sort(Gank gank1, Gank gank2) {
+	    DateTime time = DateTime.parse(gank1.publishedAt);
+	    print("time = $time");
+	    return 0;
+    }
 }

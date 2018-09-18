@@ -27,3 +27,14 @@ abstract class ClassifyPrsenter extends BasePresenter {}
 abstract class ClassifyView extends BaseView<ClassifyPrsenter> {
 	void setTabList(List<Category> list);
 }
+
+abstract class HomePresenter extends BasePresenter {
+    void fetch(int year, int month, int day);
+}
+
+abstract class HomeView extends BaseView<HomePresenter> {
+    void showDialog(bool isShow);
+    void showMessage(String message);
+    void setBannerList(List<Gank> bannerList);
+    void setDataList(List<Gank> dataList);
+}

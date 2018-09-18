@@ -26,7 +26,7 @@ class Const {
 	]);
 
 	static final Category xiandu = Category(name: '闲读', code: 'xiandu');
-	static final Category today = Category(name: '今日干货', code: 'today');
+	static final Category today = Category(name: '今日干货', code: 'day');
 }
 
 class Category {

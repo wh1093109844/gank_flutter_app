@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:gank_flutter_app/entry/daily.dart';
 import 'package:gank_flutter_app/entry/gank.dart';
 
 abstract class GankRepository {
@@ -10,4 +11,5 @@ abstract class GankRepository {
 	/// [pageSize] 每页加载的数量，
 	/// [pageNum] 请求的第几页的数据
 	Future<List<Gank>> fetch(String type, int pageSize, int pageNum);
+	Future<Daily> fetchDataByDate(int year, int month, int day);
 }
