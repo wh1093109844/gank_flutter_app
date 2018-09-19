@@ -23,12 +23,12 @@ class TextCardState extends State<TextCard> {
             new Padding(
               padding: EdgeInsets.only(bottom: 10.0),
               child: new Text(
-                widget.gank.who,
+                widget.gank.who ?? '',
                 style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0, wordSpacing: 2.0),
               ),
             ),
             new Text(
-              widget.gank.desc,
+              widget.gank.desc ?? '',
               maxLines: 2,
             ),
             new Container(
