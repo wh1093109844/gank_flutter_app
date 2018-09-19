@@ -15,7 +15,9 @@ class GankRepositoryImpl extends GankRepository {
   Future<List<Gank>> fetch(String type, int pageSize, int pageNum) async {
     String url = "$host/data/$type/$pageSize/$pageNum";
     var response = await send(url);
-    var list = response.results.map((gank) => Gank.fromJson(gank)).toList();
+    List<Gank> list = [];
+    var temp = (response.results as List).map((gank) => Gank.fromJson(gank));
+    list.addAll(temp);
     return list;
   }
 
@@ -35,12 +37,13 @@ class GankRepositoryImpl extends GankRepository {
   Future<Daily> fetchDataByDate(int year, int month, int day) async {
       String url = _isToday(year, month, day) ? '$host/today' :'$host/day/$year/$month/$day';
       var response = await send(url);
-      var banner = (response.results[Const.typeWelfare] as List).map((gank) => Gank.fromJson(gank)).toList();
+      List<Gank> banner = (response.results[Const.typeWelfare] as List).map((gank) => Gank.fromJson(gank)).toList();
+      print(banner);
       List<Gank> list = [];
-      List<Gank> temp = null;
       response.results.forEach((key, value) {
+          print('key = $key\tvalue=$value');
           if (key != Const.typeWelfare) {
-              temp = value.map((gank) => Gank.fromJson(gank)).toList();
+              var temp = (value as List).map((json) => Gank.fromJson(json)).toList();
               list.addAll(temp);
           }
       });

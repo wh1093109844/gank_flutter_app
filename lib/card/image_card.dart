@@ -39,7 +39,8 @@ class ImageCard extends StatelessWidget {
 class PhotoHolder extends StatelessWidget {
 
   String photo;
-  PhotoHolder(this.photo);
+  BoxFit fit;
+  PhotoHolder(this.photo, {this.fit = BoxFit.contain});
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +48,10 @@ class PhotoHolder extends StatelessWidget {
         tag: photo,
         child: Material(
             color: Colors.transparent,
-            child: FadeInImage.assetNetwork(placeholder: 'res/images/place_holder.jpg', image: photo),
+            child: FadeInImage.assetNetwork(
+                placeholder: 'res/images/place_holder.jpg',
+                image: photo,
+                fit: fit,),
             ),
         );
   }

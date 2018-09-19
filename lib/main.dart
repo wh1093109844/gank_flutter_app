@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gank_flutter_app/classify/classify_demo.dart';
 import 'package:gank_flutter_app/const.dart' as Const;
+import 'package:gank_flutter_app/home/home_demo.dart';
 
 void main() {
   debugInstrumentationEnabled = true;
@@ -41,20 +42,16 @@ class _MainPageState extends State<MainPage> {
 
   int current = 0;
   List<Widget> widgets = [
-    new Container(),
-    new ClassifyDemo(category: Const.Const.classification),
-    new Container(),
-    new Container()
+      new HomeDemo(),
+      new ClassifyDemo(category: Const.Const.classification),
+      new Container(),
+      new Container()
   ];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    widgets.add(new Container());
-    widgets.add(new ClassifyDemo(category: Const.Const.classification));
-    widgets.add(new Container());
-    widgets.add(new Container());
   }
 
   @override
