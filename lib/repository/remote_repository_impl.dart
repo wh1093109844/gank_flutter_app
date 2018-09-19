@@ -37,7 +37,12 @@ class GankRepositoryImpl extends GankRepository {
   Future<Daily> fetchDataByDate(int year, int month, int day) async {
       String url = _isToday(year, month, day) ? '$host/today' :'$host/day/$year/$month/$day';
       var response = await send(url);
-      List<Gank> banner = (response.results[Const.typeWelfare] as List).map((gank) => Gank.fromJson(gank)).toList();
+      List bannerListMap = response.results[Const.typeWelfare];
+      List<Gank> banner = [];
+      if (bannerListMap != null) {
+          banner = (response.results[Const.typeWelfare] as List).map((gank) =>
+              Gank.fromJson(gank)).toList();
+      }
       print(banner);
       List<Gank> list = [];
       response.results.forEach((key, value) {

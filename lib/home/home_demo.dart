@@ -7,6 +7,7 @@ import 'package:gank_flutter_app/entry/gank.dart';
 import 'package:gank_flutter_app/pages/image_page.dart';
 import 'package:gank_flutter_app/pages/webview_page.dart';
 import 'package:gank_flutter_app/presenter/home_presenter_impl.dart';
+import 'package:gank_flutter_app/widgets/page_view_indicator.dart';
 
 class HomeDemo extends StatefulWidget {
     @override 
@@ -34,9 +35,6 @@ class _HomeDemoState extends State<HomeDemo> implements HomeView {
         if (presenter != null) {
             presenter.start();
         }
-        _pageController.addListener(() {
-            print('position = ${_pageController.position.pixels}\tpage = ${_pageController.page}');
-        });
     }
 
     @override
@@ -82,12 +80,32 @@ class _HomeDemoState extends State<HomeDemo> implements HomeView {
         if (_bannerList.isEmpty ?? true) {
             return SizedBox();
         }
-        Widget widget = AspectRatio(
-            aspectRatio: 2.0,
-          child: PageView.builder(
-              itemBuilder: _pageItemBuilder,
-              controller: _pageController,
-              itemCount: _bannerList.length,),
+        Widget widget = Stack(
+          children: [
+              AspectRatio(
+                  aspectRatio: 2.0,
+                  child: PageView.builder(
+                      itemBuilder: _pageItemBuilder,
+                      controller: _pageController,
+                      itemCount: _bannerList.length,
+                  ),
+              ),
+              Positioned(
+                  child: Container(
+                      child: Center(
+                          child: PageViewIndicator(
+                              controller: _pageController,
+                              count: _bannerList.length,
+                              size: 8.0,
+                              color: Colors.white,
+                              indicatorColor: Colors.blue,
+                          )
+                      ),
+                      width: MediaQuery.of(context).size.width,
+                  ),
+                  bottom: 8.0,
+              )
+          ],
         );
         return widget;
     }
