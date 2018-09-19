@@ -34,6 +34,9 @@ class _HomeDemoState extends State<HomeDemo> implements HomeView {
         if (presenter != null) {
             presenter.start();
         }
+        _pageController.addListener(() {
+            print('position = ${_pageController.position.pixels}\tpage = ${_pageController.page}');
+        });
     }
 
     @override
@@ -55,6 +58,17 @@ class _HomeDemoState extends State<HomeDemo> implements HomeView {
         return Scaffold(
             appBar: AppBar(
                 title: Text('首页'),
+                actions: <Widget>[
+                    InkWell(
+                        child: Icon(Icons.calendar_today, color: Colors.white),
+                        onTap: () {
+                            var today = DateTime.now();
+                            var last = DateTime.parse('1970-01-01');
+                            showDatePicker(context: context, initialDate: today, firstDate: last, lastDate: today).then((DateTime date) {
+                                presenter.fetch(date.year, date.month, date.day);
+                            });
+                        },),
+                ],
             ),
             body: Container(
                 child: Stack(
