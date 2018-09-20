@@ -1,34 +1,45 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:gank_flutter_app/classify/classify_demo.dart';
 import 'package:gank_flutter_app/const.dart' as Const;
 import 'package:gank_flutter_app/home/home_demo.dart';
+import 'package:gank_flutter_app/reduxes.dart';
+import 'package:redux/redux.dart';
 
 void main() {
+  final store = Store<ReduxStoreState>(storeStateRedux, initialState: ReduxStoreState(favorites: []));
   debugInstrumentationEnabled = true;
   MaterialPageRoute.debugEnableFadingRoutes = true;
-
-  runApp(new MyApp());
+  runApp(new MyApp(store: store,));
 }
 
 class MyApp extends StatelessWidget {
+
+  Store<ReduxStoreState> store;
+
+  MyApp({this.store});
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      title: 'Flutter Demo',
-      theme: new ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or press Run > Flutter Hot Reload in IntelliJ). Notice that the
-        // counter didn't reset back to zero; the application is not restarted.
-        primarySwatch: Colors.blue,
+    return StoreProvider<ReduxStoreState>(
+      store: store,
+      child: new MaterialApp(
+        title: 'Flutter Demo',
+        theme: new ThemeData(
+          // This is the theme of your application.
+          //
+          // Try running your application with "flutter run". You'll see the
+          // application has a blue toolbar. Then, without quitting the app, try
+          // changing the primarySwatch below to Colors.green and then invoke
+          // "hot reload" (press "r" in the console where you ran "flutter run",
+          // or press Run > Flutter Hot Reload in IntelliJ). Notice that the
+          // counter didn't reset back to zero; the application is not restarted.
+          primarySwatch: Colors.blue,
+        ),
+        home: new MainPage(),
       ),
-      home: new MainPage(),
     );
   }
 }

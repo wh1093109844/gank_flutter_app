@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gank_flutter_app/const.dart';
 import 'package:gank_flutter_app/entry/gank.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:gank_flutter_app/reduxes.dart';
 import 'package:gank_flutter_app/utils/date_tools.dart';
 import 'package:intl/intl.dart';
 
@@ -47,16 +49,19 @@ class ImageCardState extends State<ImageCard> {
                     child: Text(DateTools.duration(DateTime.now(), widget.gank.publishedAt), style: style,),
                   ),
                 ),
-                InkWell(
-                  onTap: () {
-                    setState(() {
-                      _favorites = !_favorites;
-                    });
+                StoreConnector<ReduxStoreState, bool>(
+                  converter: (store) => isFavorited(widget.gank, store.state.favorites),
+                  builder: (context, isFavorites) {
+                    return InkWell(
+                      onTap: () {
+                        StoreProvider.of<ReduxStoreState>(context).dispatch(isFavorites ? UnFavoriteGankAction(widget.gank) : FavoriteGankAction(widget.gank));
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: Icon(isFavorites ? Icons.favorite : Icons.favorite_border, color: Colors.pink, size: 15.0,),
+                      ),
+                    );
                   },
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: Icon(_favorites ? Icons.favorite : Icons.favorite_border, color: Colors.pink, size: 15.0,),
-                  ),
                 ),
               ],
             )),

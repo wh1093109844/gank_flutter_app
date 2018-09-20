@@ -25,8 +25,6 @@ class WebviewPageState extends State<WebviewPage> {
 	StreamSubscription<String> _onUrlChanged;
 	StreamSubscription<WebViewStateChanged> _onStateChanged;
 	StreamSubscription<WebViewHttpError> _onHttpError;
-	StreamSubscription<double> _onScrollYChanged;
-	StreamSubscription<double> _onScrollXChanged;
 
 	final _urlCtrl = new TextEditingController(text: "");
 	final _codeCtrl = new TextEditingController(text: 'window.navigator.userAgent');
@@ -51,16 +49,7 @@ class WebviewPageState extends State<WebviewPage> {
 			print('onUrlChanged\t$url');
 		}
 	});
-	_onScrollYChanged = flutterWebviewPlugin.onScrollYChanged.listen((double y) {
-		if (mounted) {
-			print('onScrollYChanged\t$y');
-		}
-	});
-	_onScrollXChanged = flutterWebviewPlugin.onScrollXChanged.listen((double x) {
-		if (mounted) {
-			print('onScrollXChanged\t$x');
-		}
-	});
+
 	_onStateChanged = flutterWebviewPlugin.onStateChanged.listen((WebViewStateChanged state) {
 		if (mounted) {
 			print('onStateChanged: ${state.type}\t${state.url}');
@@ -80,8 +69,6 @@ class WebviewPageState extends State<WebviewPage> {
     _onUrlChanged.cancel();
     _onHttpError.cancel();
     _onStateChanged.cancel();
-    _onScrollXChanged.cancel();
-    _onScrollYChanged.cancel();
     flutterWebviewPlugin.dispose();
     super.dispose();
   }
@@ -89,14 +76,16 @@ class WebviewPageState extends State<WebviewPage> {
   @override
   Widget build(BuildContext context) {
     return new WebviewScaffold(
+      key: _scaffoldKey,
       appBar: new AppBar(
         title: new Text(widget.gank.desc),
       ),
 	    withJavascript: true,
 	    url: widget.gank.url,
-	    withZoom: true,
+	    withZoom: false,
 	    withLocalStorage: true,
 	    withLocalUrl: true,
+      enableAppScheme: true,
     );
   }
 }

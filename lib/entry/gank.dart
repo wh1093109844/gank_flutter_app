@@ -17,4 +17,6 @@ class Gank extends Object with _$GankSerializerMixin {
 	Gank(this._id, this.createdAt, this.desc, this.images, this.publishedAt, this.source, this.type, this.url, this.used, this.who);
 
 	factory Gank.fromJson(Map<String, dynamic> json) => _$GankFromJson(json);
+
+	String get id => _id;
 }
