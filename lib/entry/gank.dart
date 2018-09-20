@@ -7,7 +7,7 @@ class Gank extends Object with _$GankSerializerMixin {
 	String createdAt;
 	String desc;
 	List<String> images;
-	String publishedAt;
+	DateTime publishedAt;
 	String source;
 	String type;
 	String url;

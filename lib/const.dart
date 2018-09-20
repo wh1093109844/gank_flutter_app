@@ -29,6 +29,15 @@ class Const {
 	static final Category today = Category(name: '今日干货', code: 'day');
 }
 
+final Map<String, Color> tagColor = {
+    Const.typeWelfare: Colors.red.shade200,
+    Const.typeAndroid: Colors.blueAccent.shade200,
+    Const.typeIOS: Colors.cyan,
+    Const.typeVideo: Colors.indigo,
+    Const.typeExpand: Colors.teal,
+    Const.typeFrontEnd: Colors.green.shade300,
+};
+
 class Category {
 	String code;
 	String name;

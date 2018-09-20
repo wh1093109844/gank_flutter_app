@@ -26,8 +26,6 @@ class Daily {
     }
 
     int _sort(Gank gank1, Gank gank2) {
-	    DateTime time = DateTime.parse(gank1.publishedAt);
-	    print("time = $time");
-	    return 0;
+	    return gank1.publishedAt.compareTo(gank2.publishedAt);
     }
 }
