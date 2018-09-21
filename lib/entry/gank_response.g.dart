@@ -7,7 +7,7 @@ part of 'gank_response.dart';
 // **************************************************************************
 
 GankResponse _$GankResponseFromJson(Map<String, dynamic> json) =>
-    new GankResponse(json['error'] as bool, json['results'] as dynamic);
+    new GankResponse(json['error'] as bool, json['results']);
 
 abstract class _$GankResponseSerializerMixin {
   bool get error;

@@ -5,6 +5,7 @@ import 'package:gank_flutter_app/classify/classify_demo.dart';
 import 'package:gank_flutter_app/const.dart' as Const;
 import 'package:gank_flutter_app/home/home_demo.dart';
 import 'package:gank_flutter_app/reduxes.dart';
+import 'package:gank_flutter_app/xiandu/xiandu_demo.dart';
 import 'package:redux/redux.dart';
 
 void main() {
@@ -55,7 +56,7 @@ class _MainPageState extends State<MainPage> {
   List<Widget> widgets = [
       new HomeDemo(),
       new ClassifyDemo(category: Const.Const.classification),
-      new Container(),
+      new XianduDemo(),
       new Container()
   ];
 

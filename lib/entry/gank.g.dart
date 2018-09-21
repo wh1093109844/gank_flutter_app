@@ -11,7 +11,9 @@ Gank _$GankFromJson(Map<String, dynamic> json) => new Gank(
     json['createdAt'] as String,
     json['desc'] as String,
     (json['images'] as List)?.map((e) => e as String)?.toList(),
-    DateTime.parse(json['publishedAt'] as String),
+    json['publishedAt'] == null
+        ? null
+        : DateTime.parse(json['publishedAt'] as String),
     json['source'] as String,
     json['type'] as String,
     json['url'] as String,
@@ -34,7 +36,7 @@ abstract class _$GankSerializerMixin {
         'createdAt': createdAt,
         'desc': desc,
         'images': images,
-        'publishedAt': publishedAt,
+        'publishedAt': publishedAt?.toIso8601String(),
         'source': source,
         'type': type,
         'url': url,

@@ -12,6 +12,7 @@ dependencies:
   flutter_webview_plugin: ^0.2.1+2
   intl: ^0.15.7
   flutter_redux: ^0.5.2
+  flutter_html_textview: "^0.2.6"
 
 dev_dependencies:
   flutter_test:
@@ -22,6 +23,7 @@ dev_dependencies:
   flutter_webview_plugin: ^0.2.1+2
   intl: ^0.15.7
   flutter_redux: ^0.5.2
+  flutter_html_textview: "^0.2.6"
   
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec

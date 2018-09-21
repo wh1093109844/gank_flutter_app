@@ -78,7 +78,7 @@ abstract class AbsListPageState<T extends AbsListPage> extends State<T> with Aut
   }
 
   @override
-  void showProgress(bool isShow) {
+  void showDialog(bool isShow) {
     if (!mounted) {
       showProgressBar = isShow;
     } else {

@@ -86,4 +86,14 @@ class _ClassifyDemoState extends State<ClassifyDemo> with SingleTickerProviderSt
   // TODO: implement wantKeepAlive
   @override
   bool get wantKeepAlive => true;
+
+  @override
+  void showDialog(bool isShow) {
+    // TODO: implement showDialog
+  }
+
+  @override
+  void showMessage(String message) {
+    // TODO: implement showMessage
+  }
 }

@@ -33,15 +33,15 @@ class ClassifyListPresenterImpl extends ClassifyListPresenter {
     }
 
     void _fetchGankList(String type, int pageNum) {
-    	view.showProgress(true);
+    	view.showDialog(true);
     	repository.fetch(type, pageSize, pageNum).then((list){
     	    _isLoading = false;
     	    view.setGankList(list);
-    	    view.showProgress(false);
+    	    view.showDialog(false);
         }, onError: (e) {
     	    _isLoading = false;
     	    view.showMessage(e.toString());
-    	    view.showProgress(false);
+    	    view.showDialog(false);
         });
 
     }
