@@ -12,13 +12,13 @@ class Xiandu extends Object with _$XianduSerializerMixin {
   DateTime created_at;
   bool deleted;
   DateTime published_at;
-  String row;
+  dynamic raw;
   Site site;
   String title;
   String uid;
   String url;
 
-  Xiandu(this._id, this.content, this.cover, this.crawled, this.created_at, this.deleted, this.published_at, this.row, this.site, this.title, this.uid, this.url);
+  Xiandu(this._id, this.content, this.cover, this.crawled, this.created_at, this.deleted, this.published_at, this.raw, this.site, this.title, this.uid, this.url);
 
   factory Xiandu.formJson(json) => _$XianduFromJson(json);
 }

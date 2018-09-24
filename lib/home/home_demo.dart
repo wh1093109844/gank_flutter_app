@@ -170,7 +170,7 @@ class _HomeDemoState extends State<HomeDemo> implements HomeView {
     } else {
       return InkWell(
         child: TextCard(gank),
-        onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => WebviewPage(gank))),
+        onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => WebviewPage(gank.desc, gank.url))),
       );
     }
   }

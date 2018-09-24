@@ -6,8 +6,10 @@ import 'package:gank_flutter_app/entry/gank.dart';
 import 'package:gank_flutter_app/entry/xiandu.dart';
 import 'package:gank_flutter_app/entry/xiandu_child_type.dart';
 import 'package:gank_flutter_app/entry/xiandu_main_type.dart';
+import 'package:gank_flutter_app/pages/webview_page.dart';
 import 'package:gank_flutter_app/presenter/xiandu_presenter_impl.dart';
 import 'package:gank_flutter_app/xiandu/xiandu_detail.dart';
+import 'dart:convert';
 
 class XianduDemo extends StatefulWidget {
   @override
@@ -26,6 +28,7 @@ class XianduDemoState extends State<XianduDemo> implements XianduTypeView {
   List<Xiandu> _xianduList = [];
   XianduMainType mainType;
   XianduChildType childType;
+  Xiandu xiandu;
 
   ScrollController _controller;
 
@@ -54,11 +57,16 @@ class XianduDemoState extends State<XianduDemo> implements XianduTypeView {
   Future<bool> handlePopScope() async {
     if (mainType == null) {
       return true;
-    } else {
+    } else if (childType == null){
+
       setState(() {
         mainType = null;
       });
       return false;
+    } else {
+      setState(() {
+        childType = null;
+      });
     }
   }
 
@@ -159,10 +167,16 @@ class XianduDemoState extends State<XianduDemo> implements XianduTypeView {
       title: Text(xiandu.title),
       subtitle: Text(xiandu.site.name),
       contentPadding: EdgeInsets.all(5.0),
-      trailing: xiandu.cover == null ? null : Image.network(xiandu.cover, height: 60.0, width: 100.0,),
+      trailing: (xiandu.cover == null || xiandu.cover == '' || xiandu.cover == 'none') ? null : Image.network(xiandu.cover, height: 60.0, width: 100.0,),
       isThreeLine: true,
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => XianduDetail(xiandu)));
+//        Navigator.of(context).push(MaterialPageRoute(builder: (context) => XianduDetail(xiandu)));
+        this.xiandu = xiandu;
+        if (xiandu.content == null || xiandu.content == '') {
+          setUrl(xiandu.url);
+        } else {
+          presenter.saveHtml(xiandu.content ?? '');
+        }
       },
     );
   }
@@ -246,5 +260,10 @@ class XianduDemoState extends State<XianduDemo> implements XianduTypeView {
     setState(() {
       _xianduList = list;
     });
+  }
+
+  @override
+  void setUrl(String url) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => WebviewPage(xiandu.title, url)));
   }
 }

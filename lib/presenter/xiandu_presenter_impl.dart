@@ -1,11 +1,17 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:gank_flutter_app/contrack.dart';
 import 'package:gank_flutter_app/entry/xiandu.dart';
 import 'package:gank_flutter_app/entry/xiandu_child_type.dart';
 import 'package:gank_flutter_app/entry/xiandu_main_type.dart';
 import 'package:gank_flutter_app/repository/remote_repository.dart';
 import 'package:gank_flutter_app/repository/remote_repository_impl.dart';
+import 'package:path_provider/path_provider.dart';
 
 class XianduPresenterImpl extends XianduPresenter {
+
+  static const String fileName = 'xiandu_content.html';
 
   XianduTypeView mainTypeView;
   XianduView xianduView;
@@ -75,5 +81,31 @@ class XianduPresenterImpl extends XianduPresenter {
   @override
   void start() {
     fetchMainTypeList();
+  }
+
+  @override
+  void saveHtml(String content) {
+    print('content\t$content');
+    mainTypeView.showDialog(true);
+    saveFile(content).then((path) {
+      mainTypeView.showDialog(false);
+      mainTypeView.setUrl(Uri.file(path).toString());
+    }, onError: (error) {
+      print(error);
+      mainTypeView.showDialog(false);
+    });
+  }
+
+  Future<File> _getFile() async {
+    Directory directory = await getTemporaryDirectory();
+    String dir = directory.path;
+    print(directory);
+    return new File('$dir/$fileName');
+  }
+
+  Future<String> saveFile(String content) async {
+    File file = await _getFile();
+    file.writeAsString(content);
+    return file.path;
   }
 }

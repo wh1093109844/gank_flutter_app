@@ -46,14 +46,21 @@ abstract class XianduPresenter extends BasePresenter {
   void fetchMainTypeList();
   void fetchChildTypeList(String parent);
   void fetchXianduList(String id);
+  void saveHtml(String content);
 }
 
 abstract class XianduTypeView extends BaseView<XianduPresenter> {
   void setMainTypeList(List<XianduMainType> list);
   void setChildTypeList(List<XianduChildType> list);
   void setXianduList(List<Xiandu> list);
+  void setUrl(String url);
 }
 
 abstract class XianduView extends BaseView<XianduPresenter> {
   void setXianduList(List<Xiandu> list);
+}
+
+abstract class XianduDetailPresenter extends BasePresenter {}
+abstract class XianduDetailView extends BaseView<XianduDetailPresenter> {
+  void setUrl(String url);
 }

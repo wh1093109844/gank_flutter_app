@@ -63,7 +63,7 @@ class _ClassifyDemoState extends State<ClassifyDemo> with SingleTickerProviderSt
     if (gank.type == Const.Const.typeWelfare) {
       route = new MaterialPageRoute(builder: (context) => new ImagePage(gank));
     } else {
-      route = new MaterialPageRoute(builder: (context) => new WebviewPage(gank));
+      route = new MaterialPageRoute(builder: (context) => new WebviewPage(gank.desc, gank.url));
     }
     Navigator.of(context).push(route);
   }

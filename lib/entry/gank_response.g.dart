@@ -3,15 +3,12 @@
 part of 'gank_response.dart';
 
 // **************************************************************************
-// Generator: JsonSerializableGenerator
+// JsonSerializableGenerator
 // **************************************************************************
 
-GankResponse _$GankResponseFromJson(Map<String, dynamic> json) =>
-    new GankResponse(json['error'] as bool, json['results']);
-
-abstract class _$GankResponseSerializerMixin {
-  bool get error;
-  dynamic get results;
-  Map<String, dynamic> toJson() =>
-      <String, dynamic>{'error': error, 'results': results};
+GankResponse _$GankResponseFromJson(Map<String, dynamic> json) {
+  return GankResponse(json['error'] as bool, json['results']);
 }
+
+Map<String, dynamic> _$GankResponseToJson(GankResponse instance) =>
+    <String, dynamic>{'error': instance.error, 'results': instance.results};

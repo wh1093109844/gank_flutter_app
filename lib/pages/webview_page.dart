@@ -5,9 +5,10 @@ import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:gank_flutter_app/entry/gank.dart';
 class WebviewPage extends StatefulWidget {
 
-	Gank gank;
+	String title;
+	String url;
 
-	WebviewPage(this.gank);
+	WebviewPage(this.title, this.url);
 
   @override
   WebviewPageState createState() {
@@ -42,6 +43,7 @@ class WebviewPageState extends State<WebviewPage> {
 		if (mounted) {
 			print('onDestroy\t$url');
 		}
+		Navigator.of(context).pop();
 	});
 	_onUrlChanged = flutterWebviewPlugin.onUrlChanged.listen((String url) {
 		if (mounted) {
@@ -78,10 +80,10 @@ class WebviewPageState extends State<WebviewPage> {
     return new WebviewScaffold(
       key: _scaffoldKey,
       appBar: new AppBar(
-        title: new Text(widget.gank.desc),
+        title: new Text(widget.title),
       ),
 	    withJavascript: true,
-	    url: widget.gank.url,
+	    url: widget.url,
 	    withZoom: false,
 	    withLocalStorage: true,
 	    withLocalUrl: true,

@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:gank_flutter_app/classify/classify_demo.dart';
 import 'package:gank_flutter_app/const.dart' as Const;
+import 'package:gank_flutter_app/entry/gank.dart';
 import 'package:gank_flutter_app/home/home_demo.dart';
+import 'package:gank_flutter_app/other/other_demo.dart';
 import 'package:gank_flutter_app/reduxes.dart';
 import 'package:gank_flutter_app/xiandu/xiandu_demo.dart';
 import 'package:redux/redux.dart';
@@ -15,7 +17,7 @@ void main() {
   runApp(new MyApp(store: store,));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
 
   Store<ReduxStoreState> store;
 
@@ -23,9 +25,23 @@ class MyApp extends StatelessWidget {
 
   // This widget is the root of your application.
   @override
+  MyAppState createState() {
+    return new MyAppState();
+  }
+}
+
+class MyAppState extends State<MyApp> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return StoreProvider<ReduxStoreState>(
-      store: store,
+      store: widget.store,
       child: new MaterialApp(
         title: 'Flutter Demo',
         theme: new ThemeData(
@@ -57,13 +73,16 @@ class _MainPageState extends State<MainPage> {
       new HomeDemo(),
       new ClassifyDemo(category: Const.Const.classification),
       new XianduDemo(),
-      new Container()
+      new OtherDemo(),
   ];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    getFavorites().then((List<Gank> list) {
+      StoreProvider.of<ReduxStoreState>(context).dispatch(InitFavoritesAction(list));
+    });
   }
 
   @override

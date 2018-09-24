@@ -1,15 +1,37 @@
+import 'dart:async';
+
 import 'package:gank_flutter_app/entry/gank.dart';
 import 'package:redux/redux.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 enum Action {
   FAVORITE,
   UNFAVORITE,
 }
+
+const String favoritesKey = 'FAVORITES';
 
 class ReduxStoreState {
   List<Gank> favorites;
 
   ReduxStoreState({this.favorites});
 
+}
+
+Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
+Future<List<Gank>> getFavorites() async {
+  SharedPreferences prefs = await _prefs;
+  String result = prefs.getString(favoritesKey);
+  List mapList = json.decode(result);
+  List<Gank> list = mapList.map((json) => Gank.fromJson(json)).toList();
+  return list;
+}
+
+void saveFavorites(List<Gank> gankList) {
+  _prefs.then((SharedPreferences prefs) {
+    prefs.setString(favoritesKey, json.encode(gankList));
+  });
 }
 
 bool isFavorited(Gank gank, List<Gank> list) {
@@ -33,6 +55,7 @@ List<Gank> favorite(Gank gank, List<Gank> list) {
     }
     list.add(gank);
   }
+  saveFavorites(list);
   return list;
 }
 
@@ -46,15 +69,29 @@ List<Gank> unFavorite(Gank gank, List<Gank> list) {
       break;
     }
   }
+  saveFavorites(list);
   return list;
 }
 
 List<Gank> favoriteGank(List<Gank> gankList, FavoriteGankAction action) {
+
   return favorite(action.gank, gankList);
 }
 
 List<Gank> unFavoriteGank(List<Gank> gankList, UnFavoriteGankAction action) {
   return unFavorite(action.gank, gankList);
+}
+
+List<Gank> initFavorites(List<Gank> list, InitFavoritesAction action) {
+  if (list == null) {
+    list = [];
+  }
+  List<Gank> gankList = action.list;
+  if (gankList == null) {
+    gankList = [];
+  }
+  list.addAll(gankList);
+  return list;
 }
 
 class FavoriteGankAction {
@@ -67,9 +104,15 @@ class UnFavoriteGankAction {
   UnFavoriteGankAction(this.gank);
 }
 
+class InitFavoritesAction {
+  final List<Gank> list;
+  InitFavoritesAction(this.list);
+}
+
 final FavoriteRedux = combineReducers<List<Gank>>([
   TypedReducer<List<Gank>, FavoriteGankAction>(favoriteGank),
   TypedReducer<List<Gank>, UnFavoriteGankAction>(unFavoriteGank),
+  TypedReducer<List<Gank>, InitFavoritesAction>(initFavorites),
 ]);
 
 ReduxStoreState storeStateRedux(ReduxStoreState state, action) {
