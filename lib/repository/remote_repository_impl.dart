@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:gank_flutter_app/const.dart';
 import 'package:gank_flutter_app/entry/daily.dart';
 import 'package:gank_flutter_app/entry/gank.dart';
+import 'package:gank_flutter_app/entry/gank_content.dart';
 import 'package:gank_flutter_app/entry/gank_response.dart';
 import 'package:gank_flutter_app/entry/xiandu.dart';
 import 'package:gank_flutter_app/entry/xiandu_child_type.dart';
@@ -97,6 +98,18 @@ class GankRepositoryImpl extends GankRepository {
     List<XianduMainType> list = null;
     if (jsonMapList != null) {
       list = jsonMapList.map((json) => XianduMainType.fromJson(json)).toList();
+    }
+    return list;
+  }
+
+  @override
+  Future<List<Content>> fetchGankContentList(int pageSize, int pageNum) async {
+    String url = '$host/history/content/$pageSize/$pageNum';
+    var response = await send(url);
+    List jsonMapList = response.results as List;
+    List<Content> list = null;
+    if (jsonMapList != null) {
+      list = jsonMapList.map((json) => Content.fromJson(json)).toList();
     }
     return list;
   }

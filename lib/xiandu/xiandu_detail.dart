@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_html_textview/flutter_html_textview.dart';
 import 'package:gank_flutter_app/card/image_card.dart';
 import 'package:gank_flutter_app/contrack.dart';
 import 'package:gank_flutter_app/entry/xiandu.dart';

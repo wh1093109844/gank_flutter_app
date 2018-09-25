@@ -1,6 +1,7 @@
 
 import 'package:gank_flutter_app/const.dart';
 import 'package:gank_flutter_app/entry/gank.dart';
+import 'package:gank_flutter_app/entry/gank_content.dart';
 import 'package:gank_flutter_app/entry/xiandu.dart';
 import 'package:gank_flutter_app/entry/xiandu_child_type.dart';
 import 'package:gank_flutter_app/entry/xiandu_main_type.dart';
@@ -12,7 +13,6 @@ abstract class BaseView<T extends BasePresenter> {
 	T presenter;
 	void setPresenter(T presenter) {
 		this.presenter = presenter;
-		presenter.start();
 	}
 
   void showDialog(bool isShow);
@@ -63,4 +63,12 @@ abstract class XianduView extends BaseView<XianduPresenter> {
 abstract class XianduDetailPresenter extends BasePresenter {}
 abstract class XianduDetailView extends BaseView<XianduDetailPresenter> {
   void setUrl(String url);
+}
+
+abstract class GankCenterPresenter extends BasePresenter {
+  void fatchGankCenterList();
+}
+
+abstract class GankCenterView extends BaseView<GankCenterPresenter> {
+  void setGankContentList(List<Content> contentList);
 }

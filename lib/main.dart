@@ -13,7 +13,6 @@ import 'package:redux/redux.dart';
 void main() {
   final store = Store<ReduxStoreState>(storeStateRedux, initialState: ReduxStoreState(favorites: []));
   debugInstrumentationEnabled = true;
-  MaterialPageRoute.debugEnableFadingRoutes = true;
   runApp(new MyApp(store: store,));
 }
 
