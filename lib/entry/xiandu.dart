@@ -4,8 +4,10 @@ import 'package:json_annotation/json_annotation.dart';
 part 'xiandu.g.dart';
 
 @JsonSerializable()
-class Xiandu extends Object with _$XianduSerializerMixin {
-  String _id;
+class Xiandu extends Object {
+
+  @JsonKey(name: '_id')
+  String id;
   String content;
   String cover;
   int crawled;
@@ -18,13 +20,13 @@ class Xiandu extends Object with _$XianduSerializerMixin {
   String uid;
   String url;
 
-  Xiandu(this._id, this.content, this.cover, this.crawled, this.created_at, this.deleted, this.published_at, this.raw, this.site, this.title, this.uid, this.url);
+  Xiandu(this.id, this.content, this.cover, this.crawled, this.created_at, this.deleted, this.published_at, this.raw, this.site, this.title, this.uid, this.url);
 
   factory Xiandu.formJson(json) => _$XianduFromJson(json);
 }
 
 @JsonSerializable()
-class Site extends Object with _$SiteSerializerMixin {
+class Site extends Object {
   String cat_cn;
   String cat_en;
   String desc;

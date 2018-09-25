@@ -2,7 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'gank_response.g.dart';
 
 @JsonSerializable()
-class GankResponse extends Object with _$GankResponseSerializerMixin {
+class GankResponse extends Object {
 	bool error;
 	dynamic results;
 
