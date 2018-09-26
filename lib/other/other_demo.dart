@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gank_flutter_app/other/gank_page.dart';
 
 class OtherDemo extends StatelessWidget {
   @override
@@ -11,6 +12,9 @@ class OtherDemo extends StatelessWidget {
         children: <Widget>[
           ListTile(
             title: Text('干货集中营'),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => GankCenterPage()));
+            },
           ),
           Divider(height: 1.0,),
           ListTile(

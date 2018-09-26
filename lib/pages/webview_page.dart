@@ -80,11 +80,12 @@ class WebviewPageState extends State<WebviewPage> {
     return new WebviewScaffold(
       key: _scaffoldKey,
       appBar: new AppBar(
-        title: new Text(widget.title),
+        title: new Text(widget.title,),
+        automaticallyImplyLeading: true,
       ),
 	    withJavascript: true,
 	    url: widget.url,
-	    withZoom: false,
+	    withZoom: true,
 	    withLocalStorage: true,
 	    withLocalUrl: true,
       enableAppScheme: true,

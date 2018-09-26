@@ -67,8 +67,10 @@ abstract class XianduDetailView extends BaseView<XianduDetailPresenter> {
 
 abstract class GankCenterPresenter extends BasePresenter {
   void fatchGankCenterList();
+  void onItemClick(Content content);
 }
 
 abstract class GankCenterView extends BaseView<GankCenterPresenter> {
   void setGankContentList(List<Content> contentList);
+  void openWebview(String title, String url);
 }

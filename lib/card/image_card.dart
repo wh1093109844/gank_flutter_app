@@ -82,7 +82,9 @@ class PhotoHolder extends StatelessWidget {
 
   String photo;
   BoxFit fit;
-  PhotoHolder(this.photo, {this.fit = BoxFit.contain});
+  double width;
+  double height;
+  PhotoHolder(this.photo, {this.fit = BoxFit.contain, this.width, this.height});
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +95,10 @@ class PhotoHolder extends StatelessWidget {
             child: FadeInImage.assetNetwork(
                 placeholder: 'res/images/place_holder.jpg',
                 image: photo,
-                fit: fit,),
+                fit: fit,
+                height: height,
+                width: width,
+              ),
             ),
         );
   }
