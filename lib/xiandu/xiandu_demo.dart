@@ -12,6 +12,9 @@ import 'package:gank_flutter_app/xiandu/xiandu_detail.dart';
 import 'dart:convert';
 
 class XianduDemo extends StatefulWidget {
+
+  XianduDemo({Key key}): super(key: key);
+
   @override
   XianduDemoState createState() {
     XianduDemoState state = XianduDemoState();
@@ -20,7 +23,7 @@ class XianduDemo extends StatefulWidget {
   }
 }
 
-class XianduDemoState extends State<XianduDemo> implements XianduTypeView {
+class XianduDemoState extends State<XianduDemo> with AutomaticKeepAliveClientMixin<XianduDemo> implements XianduTypeView {
 
   bool _isShow = false;
   List<XianduMainType> _mainTypeList = [];
@@ -42,6 +45,7 @@ class XianduDemoState extends State<XianduDemo> implements XianduTypeView {
       stackWidgets.add(Center(child: CircularProgressIndicator()));
     }
     return WillPopScope(
+      key: ObjectKey('xiandu'),
       onWillPop: handlePopScope,
       child: new Scaffold(
         appBar: buildAppBar(),
@@ -266,4 +270,8 @@ class XianduDemoState extends State<XianduDemo> implements XianduTypeView {
   void setUrl(String url) {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) => WebviewPage(xiandu.title, url)));
   }
+
+  // TODO: implement wantKeepAlive
+  @override
+  bool get wantKeepAlive => true;
 }

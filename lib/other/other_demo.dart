@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:gank_flutter_app/other/gank_page.dart';
 
 class OtherDemo extends StatelessWidget {
+
+  OtherDemo({Key key}): super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: ObjectKey('other'),
       appBar: AppBar(
         title: Text('其他'),
       ),

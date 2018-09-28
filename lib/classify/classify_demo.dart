@@ -12,7 +12,7 @@ class ClassifyDemo extends StatefulWidget {
 
   Const.Category category;
 
-  ClassifyDemo({@required this.category});
+  ClassifyDemo({@required this.category, Key key}): super(key: key);
 
   @override
   _ClassifyDemoState createState() {
@@ -47,6 +47,7 @@ class _ClassifyDemoState extends State<ClassifyDemo> with SingleTickerProviderSt
       }
     }).toList();
     return new Scaffold(
+      key: ObjectKey('clasify'),
       appBar: new AppBar(
         title: new Text(widget.category.name),
         bottom: new TabBar(tabs: tabWidgets, controller: _tabController, isScrollable: true, ),

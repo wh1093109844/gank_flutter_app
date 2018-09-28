@@ -21,9 +21,10 @@ class ImageListPage extends AbsListPage {
 class _ImageListPageState extends AbsListPageState<ImageListPage> {
 
   List<Position> positionList = [];
-  double margin = 5.0;
-  int rowNum = 3;
+  double margin = 0.0;
+  int rowNum = 12;
   int columnNum = 3;
+  int maxItemSize = 3;
 
   @override
   Widget buildBody(BuildContext context) {
@@ -77,7 +78,7 @@ class _ImageListPageState extends AbsListPageState<ImageListPage> {
         blocks = initBlock(columnNum, rowNum);
         list.add(
           Container(
-            height: height,
+            constraints: BoxConstraints(maxHeight: height),
             padding: EdgeInsets.only(bottom: margin),
             child: Stack(
               children: children
@@ -90,7 +91,7 @@ class _ImageListPageState extends AbsListPageState<ImageListPage> {
     if (children.isNotEmpty) {
       list.add(
         Container(
-          height: height,
+          constraints: BoxConstraints(maxHeight: height),
           padding: EdgeInsets.only(bottom: margin),
           child: Stack(
             children: children
@@ -110,7 +111,7 @@ class _ImageListPageState extends AbsListPageState<ImageListPage> {
   Point getSizePoint(List<List<int>> blocks, Point p) {
     Random random = Random();
     int maxWidth = getMaxWidth(blocks, p);
-    int maxHeight = blocks.length - p.y;
+    int maxHeight = min(maxItemSize, blocks.length - p.y);
     if (maxWidth == 3 && maxHeight < 2) {
       maxWidth = 1;
     }
@@ -183,7 +184,7 @@ class _ImageListPageState extends AbsListPageState<ImageListPage> {
         break;
       }
     }
-    return maxW;
+    return min(maxW, maxItemSize);
   }
 }
 

@@ -12,6 +12,9 @@ import 'package:intl/intl.dart' as Intl;
 import 'dart:math' as math;
 
 class HomeDemo extends StatefulWidget {
+
+  HomeDemo({Key key}): super(key: key);
+
   @override
   _HomeDemoState createState() {
     _HomeDemoState state = _HomeDemoState();
@@ -20,7 +23,7 @@ class HomeDemo extends StatefulWidget {
   }
 }
 
-class _HomeDemoState extends State<HomeDemo> implements HomeView {
+class _HomeDemoState extends State<HomeDemo> with AutomaticKeepAliveClientMixin<HomeDemo> implements HomeView {
   List<Gank> _bannerList = [];
   List<Gank> _dataList = [];
   bool _showProgress = false;
@@ -65,6 +68,7 @@ class _HomeDemoState extends State<HomeDemo> implements HomeView {
       );
     }));
     return Scaffold(
+      key: ObjectKey('home'),
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return <Widget>[
@@ -220,6 +224,10 @@ class _HomeDemoState extends State<HomeDemo> implements HomeView {
     }
     Scaffold.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
+
+  // TODO: implement wantKeepAlive
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class TopRightFloatingActionButtonLocation extends FloatingActionButtonLocation {

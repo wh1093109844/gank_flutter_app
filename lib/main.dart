@@ -65,15 +65,32 @@ class MainPage extends StatefulWidget {
   _MainPageState createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class MainContentView {
+  Widget content;
+
+  AnimationController controller;
+  Animation<double> _animation;
+
+  MainContentView({@required this.content, TickerProvider vsync}) :
+    controller = AnimationController(duration: kThemeAnimationDuration, vsync: vsync) {
+    _animation = controller.drive(CurveTween(
+      curve: const Interval(0.0, 1.0, curve: Curves.fastOutSlowIn)
+    ));
+  }
+
+
+  FadeTransition transition() {
+    return FadeTransition(
+      opacity: _animation,
+      child: content,
+    );
+  }
+}
+
+class _MainPageState extends State<MainPage> with TickerProviderStateMixin{
 
   int current = 0;
-  List<Widget> widgets = [
-      new HomeDemo(),
-      new ClassifyDemo(category: Const.Const.classification),
-      new XianduDemo(),
-      new OtherDemo(),
-  ];
+  List<MainContentView> widgets;
 
   @override
   void initState() {
@@ -82,29 +99,71 @@ class _MainPageState extends State<MainPage> {
     getFavorites().then((List<Gank> list) {
       StoreProvider.of<ReduxStoreState>(context).dispatch(InitFavoritesAction(list));
     });
+    widgets = [
+      MainContentView(
+        content: new HomeDemo(key: ObjectKey('home'),),
+        vsync: this,
+      ),
+      MainContentView(
+        content: new ClassifyDemo(category: Const.Const.classification, key: ObjectKey('class'),),
+        vsync: this,
+        ),
+      MainContentView(
+        content: new XianduDemo(key: ObjectKey('xiandu'),),
+        vsync: this,
+        ),
+      MainContentView(
+        content: new OtherDemo(key: ObjectKey('other'),),
+        vsync: this,
+        ),
+    ];
+    for(MainContentView view in widgets) {
+      view.controller.addListener(_build);
+    }
+    widgets[current].controller.value = 1.0;
+  }
+
+  @override
+  void dispose() {
+    widgets.forEach((view) => view.controller.dispose());
+    super.dispose();
+  }
+
+  void _build() {
+    setState(() {
+
+    });
+  }
+
+  Widget _buildContent() {
+    List<FadeTransition> list = widgets.map((view) => view.transition()).toList();
+    list.sort((FadeTransition a, FadeTransition b) {
+      final Animation<double> aAnimation = a.opacity;
+      final Animation<double> bAnimation = b.opacity;
+      final double aValue = aAnimation.value;
+      final double bValue = bAnimation.value;
+      return aValue.compareTo(bValue);
+    });
+    return Stack(children: list,);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Column(
-          children: <Widget>[
-            Expanded(child: Container(
-              child: widgets[current],
-            )),
-            BottomNavigationBar(
-              items: generBottomNavigationBarItems(),
-              onTap: handleBottomTap,
-              fixedColor: Colors.black,
-              type: BottomNavigationBarType.fixed,
-            )
-          ],
-        ));
+        body: _buildContent(),
+        bottomNavigationBar: BottomNavigationBar(
+          items: generBottomNavigationBarItems(),
+          onTap: handleBottomTap,
+          fixedColor: Colors.black,
+          type: BottomNavigationBarType.fixed,
+        ),);
   }
 
   void handleBottomTap(int index) {
     setState(() {
+      widgets[current].controller.reverse();
       current = index;
+      widgets[current].controller.forward();
     });
   }
 
