@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:gank_flutter_app/classify/classify_bloc.dart';
+import 'package:gank_flutter_app/classify/classify_service.dart';
 import 'package:gank_flutter_app/const.dart' as Const;
+import 'package:gank_flutter_app/const.dart';
 import 'package:gank_flutter_app/contrack.dart';
 import 'package:gank_flutter_app/entry/gank.dart';
 import 'package:gank_flutter_app/pages/default_list_page.dart';
@@ -17,43 +20,73 @@ class ClassifyDemo extends StatefulWidget {
   @override
   _ClassifyDemoState createState() {
     var state = _ClassifyDemoState();
-    new ClassifyPresenterImpl(state);
+//    new ClassifyPresenterImpl(state);
     return state;
   }
 }
 
-class _ClassifyDemoState extends State<ClassifyDemo> with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin<ClassifyDemo> implements ClassifyView {
+class _ClassifyDemoState extends State<ClassifyDemo> with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin<ClassifyDemo> {
 
   TabController _tabController;
 
   @override
   void initState() {
-    _tabController = new TabController(length: typeList?.length ?? 0, vsync: this);
+    _tabController = new TabController(length: 0, vsync: this);
   }
 
   void dispose() {
     super.dispose();
-    _tabController.dispose();
+    _tabController?.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> tabWidgets = typeList?.map((tab) => new Container(child: new Center(child: new Text(tab.code)), height: 48.0,)).toList() ?? [];
-    List<Widget> viewPages = typeList?.map((tab){
+    return StreamBuilder(
+        stream: ClassifyProvider.of(context).classifys,
+        initialData: [],
+        builder: (context, snapshot) {
+          print(snapshot);
+          if (snapshot.data != null) {
+            _tabController = new TabController(length: snapshot.data.length, vsync: this);
+          }
+          return new Scaffold(
+            key: ObjectKey('clasify'),
+            appBar: new AppBar(
+              title: new Text(widget.category.name),
+              bottom: snapshot.data == null || snapshot.data.isEmpty ? null : new TabBar(tabs: buildTabItem(snapshot.data), controller: _tabController, isScrollable: true, ),
+              ),
+            body: buildBody(snapshot), // This trailing comma makes auto-formatting nicer for build methods.
+            );
+        },
+      );
+  }
+
+  List<Widget> buildTabItem(List<Category> data) {
+    return data.map((tab) => new Container(child: new Center(child: new Text(tab.code)), height: 48.0,)).toList();
+  }
+
+  List<Widget> buildTabContent(List<Category> data) {
+    List<Widget> viewPages = data?.map((tab){
       if (tab == Const.Const.welfare) {
         return new ImageListPage(tab.code, onTapCallback: handleTap,);
       } else {
         return new DefaultListPage(tab.code, onTapCallback: handleTap,);
       }
     }).toList();
-    return new Scaffold(
-      key: ObjectKey('clasify'),
-      appBar: new AppBar(
-        title: new Text(widget.category.name),
-        bottom: new TabBar(tabs: tabWidgets, controller: _tabController, isScrollable: true, ),
-      ),
-      body: new TabBarView(children: viewPages, controller: _tabController,), // This trailing comma makes auto-formatting nicer for build methods.
-    );
+    return viewPages;
+  }
+
+  Widget buildBody(snapshot) {
+    if (snapshot.error != null) {
+      Scaffold.of(context).showSnackBar(SnackBar(content: Text(snapshot.error)));
+      return Container(
+        constraints: BoxConstraints.expand(),
+      );
+    } else if (snapshot.data == null || snapshot.data.isEmpty) {
+      return Center(child: CircularProgressIndicator(),);
+    } else {
+      return new TabBarView(children: buildTabContent(snapshot.data), controller: _tabController,);
+    }
   }
 
   void handleTap(Gank gank) {
@@ -69,32 +102,8 @@ class _ClassifyDemoState extends State<ClassifyDemo> with SingleTickerProviderSt
     Navigator.of(context).push(route);
   }
 
-  @override
-  ClassifyPrsenter presenter;
-  List<Const.Category> typeList;
-
-  @override
-  void setPresenter(ClassifyPrsenter presenter) {
-    this.presenter = presenter;
-    presenter.start();
-  }
-
-  @override
-  void setTabList(List<Const.Category> list) {
-    this.typeList = list;
-  }
-
   // TODO: implement wantKeepAlive
   @override
   bool get wantKeepAlive => true;
 
-  @override
-  void showDialog(bool isShow) {
-    // TODO: implement showDialog
-  }
-
-  @override
-  void showMessage(String message) {
-    // TODO: implement showMessage
-  }
 }
