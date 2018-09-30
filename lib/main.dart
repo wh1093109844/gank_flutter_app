@@ -66,6 +66,12 @@ class MyAppState extends State<MyApp> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    widget.classifyBloc.dispose();
+    super.dispose();
+  }
 }
 
 class MainPage extends StatefulWidget {
@@ -81,9 +87,7 @@ class MainContentView {
 
   MainContentView({@required this.content, TickerProvider vsync}) :
     controller = AnimationController(duration: kThemeAnimationDuration, vsync: vsync) {
-    _animation = controller.drive(CurveTween(
-      curve: const Interval(0.0, 1.0, curve: Curves.fastOutSlowIn)
-    ));
+    _animation = CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn);
   }
 
 

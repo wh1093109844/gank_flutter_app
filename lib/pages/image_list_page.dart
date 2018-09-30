@@ -27,14 +27,14 @@ class _ImageListPageState extends AbsListPageState<ImageListPage> {
   int maxItemSize = 3;
 
   @override
-  Widget buildBody(BuildContext context) {
+  Widget buildBody(BuildContext context, List<Gank> gankList) {
     return ListView(
-      children: buildListItems(),
+      children: buildListItems(gankList),
       controller: scrollController,
     );
   }
 
-  List<Widget> buildListItems() {
+  List<Widget> buildListItems(List<Gank> gankList) {
     double width = MediaQuery.of(context).size.width;
     double itemWidth = (width - ((columnNum + 1) * margin)) / columnNum;
     double height = itemWidth * rowNum + margin * rowNum;

@@ -25,13 +25,14 @@ class ClassifyDemo extends StatefulWidget {
   }
 }
 
-class _ClassifyDemoState extends State<ClassifyDemo> with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin<ClassifyDemo> {
+class _ClassifyDemoState extends State<ClassifyDemo> with TickerProviderStateMixin<ClassifyDemo>, AutomaticKeepAliveClientMixin<ClassifyDemo> {
 
   TabController _tabController;
 
   @override
   void initState() {
     _tabController = new TabController(length: 0, vsync: this);
+
   }
 
   void dispose() {
@@ -41,6 +42,7 @@ class _ClassifyDemoState extends State<ClassifyDemo> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    ClassifyProvider.of(context).loadClassifys.add("");
     return StreamBuilder(
         stream: ClassifyProvider.of(context).classifys,
         initialData: [],

@@ -21,7 +21,7 @@ class DefaultListPage extends AbsListPage {
 class _DefaultListPageState extends AbsListPageState<DefaultListPage> {
 
   @override
-  Widget buildBody(BuildContext context) {
+  Widget buildBody(BuildContext context, List<Gank> gankList) {
     return new ListView.builder(itemBuilder: (context, index) {
       var child;
       Gank gank = gankList[index];
