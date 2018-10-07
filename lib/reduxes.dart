@@ -24,13 +24,13 @@ Future<List<Gank>> getFavorites() async {
   SharedPreferences prefs = await _prefs;
   String result = prefs.getString(favoritesKey);
   List mapList = json.decode(result);
-  List<Gank> list = mapList.map((json) => Gank.fromJson(json)).toList();
+  List<Gank> list = mapList.map((str) => json.decode(str)).map((json) => Gank.fromJson(json)).toList();
   return list;
 }
 
 void saveFavorites(List<Gank> gankList) {
   _prefs.then((SharedPreferences prefs) {
-    prefs.setString(favoritesKey, json.encode(gankList));
+    prefs.setString(favoritesKey, json.encode(gankList, toEncodable: (gank) => gank.toString()));
   });
 }
 

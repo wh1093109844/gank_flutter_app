@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gank_flutter_app/classify/classify_bloc.dart';
+import 'package:gank_flutter_app/classify/classify_page.dart';
 import 'package:gank_flutter_app/contrack.dart';
 import 'package:gank_flutter_app/entry/gank.dart';
 import 'package:gank_flutter_app/presenter/classify_list_presenter_impl.dart';
@@ -13,7 +14,6 @@ abstract class AbsListPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     var state = createListPageState();
-//    new ClassifyListPresenterImpl(state, type);
     return state;
   }
 
@@ -23,49 +23,69 @@ abstract class AbsListPage extends StatefulWidget {
 abstract class AbsListPageState<T extends AbsListPage> extends State<T> with AutomaticKeepAliveClientMixin<T> {
   bool showProgressBar;
   ScrollController scrollController;
+  ClassifyPage _page;
 
-  Widget buildBody(BuildContext context, List<Gank> gankList);
+  Widget buildBody(BuildContext context, ClassifyPage page);
 
   @override
   void initState() {
     super.initState();
-//    presenter.start();
-    scrollController = new ScrollController();
-    scrollController.addListener(() {
-      if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
-//        presenter.fetch();
-        ClassifyProvider.of(context).loadGankList.add(widget.type);
-      }
-    });
+
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<Gank>>(
+    if (_page == null) {
+      ClassifyProvider.of(context).loadGankListIndex(widget.type).add(1);
+    }
+    return StreamBuilder<ClassifyPage>(
       stream: ClassifyProvider.of(context).gankStream(widget.type),
       builder: (context, snapshot) {
+        var list = <Widget>[];
         if (snapshot.connectionState == ConnectionState.waiting) {
-          ClassifyProvider.of(context).loadGankList.add(widget.type);
-          return Center(child: Stack(
+          list.add(Center(child: Stack(
             children: <Widget>[
               Text('empty'),
-              CircularProgressIndicator(),
             ],
-          ));
+          )));
         } else if (snapshot.connectionState == ConnectionState.active && snapshot.error != null) {
           Scaffold.of(context).showSnackBar(SnackBar(content: Text(snapshot.error)));
-          return Center(
+          list.add(Center(
             child: Text('empty'),
-          );
+          ));
         } else if (snapshot.connectionState == ConnectionState.active && snapshot.data != null){
-          return buildBody(context, snapshot.data);
+          _page = snapshot.data;
+          initScrollController();
+          list.add(buildBody(context, snapshot.data));
         } else {
-          return Center(
+          list.add(Center(
             child: Text('empty'),
-          );
+          ));
         }
+        list.add(StreamBuilder(
+          initialData: false,
+          stream: ClassifyProvider.of(context).shouldShowProgress(widget.type),
+          builder: (context, snapshot) {
+            if (snapshot.data) {
+              return Center(child: CircularProgressIndicator());
+            } else {
+              return SizedBox(width: 0.0, height: 0.0,);
+          }}));
+        return Stack(
+            children: list,
+            );
       },
     );
+  }
+
+  void initScrollController() {
+    scrollController = new ScrollController(initialScrollOffset: _page == null || _page.scrollY == null ? 0.0 : _page.scrollY);
+    scrollController.addListener(() {
+      ClassifyProvider.of(context).scrolledChanged(widget.type).add(scrollController.position.pixels);
+      if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
+        ClassifyProvider.of(context).loadGankListIndex(widget.type).add(_page?.pageNum + 1);
+      }
+    });
   }
 
   @override

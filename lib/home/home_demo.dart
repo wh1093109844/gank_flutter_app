@@ -4,6 +4,8 @@ import 'package:gank_flutter_app/card/text_card.dart';
 import 'package:gank_flutter_app/const.dart';
 import 'package:gank_flutter_app/contrack.dart';
 import 'package:gank_flutter_app/entry/gank.dart';
+import 'package:gank_flutter_app/gank_provider.dart';
+import 'package:gank_flutter_app/home/daily_bloc.dart';
 import 'package:gank_flutter_app/pages/image_page.dart';
 import 'package:gank_flutter_app/pages/webview_page.dart';
 import 'package:gank_flutter_app/presenter/home_presenter_impl.dart';
@@ -31,6 +33,8 @@ class _HomeDemoState extends State<HomeDemo> with AutomaticKeepAliveClientMixin<
   DateTime time = DateTime.now();
   bool reverse = false;
 
+  DailyWrapper _wrapper;
+
   @override
   HomePresenter presenter;
 
@@ -51,79 +55,155 @@ class _HomeDemoState extends State<HomeDemo> with AutomaticKeepAliveClientMixin<
 
   @override
   Widget build(BuildContext context) {
-    var listViewChildren = _dataList.map((gank) => _buildItemWidget(gank)).toList();
-    var stackChildren = <Widget>[];
-    if (_showProgress) {
-      stackChildren.add(Center(child: CircularProgressIndicator()));
-    }
-    Intl.DateFormat dateFormat = Intl.DateFormat('yyyy-MM-dd');
-    stackChildren.add(Builder(builder: (context) {
-      return CustomScrollView(
-        slivers: <Widget>[
-          new SliverOverlapInjector(handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context)),
-          SliverList(
-            delegate: SliverChildListDelegate(listViewChildren),
-          ),
-        ],
-      );
-    }));
-    return Scaffold(
-      key: ObjectKey('home'),
-      body: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return <Widget>[
-            SliverOverlapAbsorber(
-              handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-              child: SliverAppBar(
-                floating: false,
-                pinned: true,
-                primary: true,
-                forceElevated: true,
-                elevation: 5.0,
-                expandedHeight: 200.0,
-                title: Text('每日数据'),
-                flexibleSpace: FlexibleSpaceBar(
-                  centerTitle: true,
-                  title: new Text(dateFormat.format(time)),
-                  background: _buildBanner(),
-                ),
-                actions: <Widget>[
-                    IconButton(
-                      icon: Icon(
-                        Icons.calendar_today,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {
-                        var today = DateTime.now();
-                        var last = DateTime.parse('1970-01-01');
-                        showDatePicker(context: context, initialDate: today, firstDate: last, lastDate: today)
-                            .then((DateTime date) {
-                          if (date == null) {
-                            return;
-                          }
-                          time = date;
-                          presenter.fetch(date.year, date.month, date.day);
-                        });
-                      },
+//    var listViewChildren = _dataList.map((gank) => _buildItemWidget(gank)).toList();
+//    var stackChildren = <Widget>[];
+//    if (_showProgress) {
+//      stackChildren.add(Center(child: CircularProgressIndicator()));
+//    }
+//    Intl.DateFormat dateFormat = Intl.DateFormat('yyyy-MM-dd');
+//    stackChildren.add(Builder(builder: (context) {
+//      return CustomScrollView(
+//        slivers: <Widget>[
+//          new SliverOverlapInjector(handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context)),
+//          SliverList(
+//            delegate: SliverChildListDelegate(listViewChildren),
+//          ),
+//        ],
+//      );
+//    }));
+    return StreamBuilder<DailyWrapper>(
+      stream: GankProvider.of(context).dailyBloC.daily,
+      builder: (context, snapshot) {
+        if (snapshot.data?.daily?.bannerList?.isNotEmpty && snapshot.data?.daily?.dataList?.isNotEmpty) {
+          _wrapper = snapshot.data;
+        }
+        var children = <Widget>[
+          Builder(builder: (context) {
+            return CustomScrollView(
+              slivers: <Widget>[
+                new SliverOverlapInjector(handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context)),
+                SliverList(
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    return _buildItemWidget(_wrapper?.daily?.dataList[index]);
+                  },
+                  childCount: _wrapper?.daily?.dataList?.length),
+                )
+              ],
+            );
+          },),
+        ];
+        return Scaffold(
+          body: NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrollled) {
+              return <Widget>[
+                SliverOverlapAbsorber(
+                  handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                  child: SliverAppBar(
+                    floating: false,
+                    pinned: true,
+                    primary: true,
+                    forceElevated: true,
+                    elevation: 5.0,
+                    expandedHeight: 200.0,
+                    title: Text('每日数据'),
+                    flexibleSpace: FlexibleSpaceBar(
+                      title: Text(_wrapper?.date),
+                      background: _buildBanner(),
                     ),
-                ],
-              ),
-            ),
-          ];
-        },
-        body: Container(
-          child: Stack(
-            children: stackChildren,
-          ),
-        ),
-      ),
+                    actions: <Widget>[
+                      IconButton(
+                        icon: Icon(
+                          Icons.calendar_today,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          var today = DateTime.now();
+                          var last = DateTime.parse('1970-01-01');
+                          showDatePicker(context: context, initialDate: today, firstDate: last, lastDate: today)
+                            .then((DateTime date) {
+                            if (date == null) {
+                              return;
+                            }
+                            GankProvider.of(context).dailyBloC.date.add(date);
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ];
+            },
+            body: StreamBuilder<bool>(
+              initialData: false,
+              builder: (context, snapshot) {
+                if (snapshot.data) {
+                  children.add(Center(child: CircularProgressIndicator()));
+                }
+                return Stack(
+                  children: children,
+                );
+              }
+            )),
+        );
+      },
     );
+//    return Scaffold(
+//      key: ObjectKey('home'),
+//      body: NestedScrollView(
+//        headerSliverBuilder: (context, innerBoxIsScrolled) {
+//          return <Widget>[
+//            SliverOverlapAbsorber(
+//              handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+//              child: SliverAppBar(
+//                floating: false,
+//                pinned: true,
+//                primary: true,
+//                forceElevated: true,
+//                elevation: 5.0,
+//                expandedHeight: 200.0,
+//                title: Text('每日数据'),
+//                flexibleSpace: FlexibleSpaceBar(
+//                  centerTitle: true,
+//                  title: new Text(dateFormat.format(time)),
+//                  background: _buildBanner(),
+//                ),
+//                actions: <Widget>[
+//                    IconButton(
+//                      icon: Icon(
+//                        Icons.calendar_today,
+//                        color: Colors.white,
+//                      ),
+//                      onPressed: () {
+//                        var today = DateTime.now();
+//                        var last = DateTime.parse('1970-01-01');
+//                        showDatePicker(context: context, initialDate: today, firstDate: last, lastDate: today)
+//                            .then((DateTime date) {
+//                          if (date == null) {
+//                            return;
+//                          }
+//                          presenter.fetch(date.year, date.month, date.day);
+//                        });
+//                      },
+//                    ),
+//                ],
+//              ),
+//            ),
+//          ];
+//        },
+//        body: Container(
+//          child: Stack(
+//            children: stackChildren,
+//          ),
+//        ),
+//      ),
+//    );
   }
 
   Widget _buildBanner() {
-    if (_bannerList.isEmpty ?? true) {
+    if (_wrapper.daily == null || _wrapper.daily.bannerList == null || _wrapper.daily.bannerList.isEmpty) {
       return SizedBox();
     }
+    var _bannerList = _wrapper.daily.bannerList;
     List<Widget> children = [
       Container(
         height: 400.0,

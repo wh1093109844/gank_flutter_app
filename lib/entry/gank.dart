@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:json_annotation/json_annotation.dart';
 part 'gank.g.dart';
 
@@ -18,4 +20,10 @@ class Gank extends Object {
 	Gank(this.id, this.createdAt, this.desc, this.images, this.publishedAt, this.source, this.type, this.url, this.used, this.who);
 
 	factory Gank.fromJson(Map<String, dynamic> json) => _$GankFromJson(json);
+
+	@override
+  String toString() {
+    // TODO: implement toString
+    return json.encode(_$GankToJson(this));
+  }
 }

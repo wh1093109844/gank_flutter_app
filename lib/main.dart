@@ -6,6 +6,9 @@ import 'package:gank_flutter_app/classify/classify_demo.dart';
 import 'package:gank_flutter_app/classify/classify_service.dart';
 import 'package:gank_flutter_app/const.dart' as Const;
 import 'package:gank_flutter_app/entry/gank.dart';
+import 'package:gank_flutter_app/gank_provider.dart';
+import 'package:gank_flutter_app/home/daily_bloc.dart';
+import 'package:gank_flutter_app/home/daily_service.dart';
 import 'package:gank_flutter_app/home/home_demo.dart';
 import 'package:gank_flutter_app/other/other_demo.dart';
 import 'package:gank_flutter_app/reduxes.dart';
@@ -14,18 +17,21 @@ import 'package:redux/redux.dart';
 
 void main() {
   final ClassifyService service = ClassifyService();
-  ClassifyBloc bloc = ClassifyBloc(service);
+  final DailyService dailyService = DailyService();
+  final ClassifyBloc bloc = ClassifyBloc(service);
+  final DailyBloC dailyBloC = DailyBloC(service: dailyService);
   final store = Store<ReduxStoreState>(storeStateRedux, initialState: ReduxStoreState(favorites: []));
   debugInstrumentationEnabled = true;
-  runApp(new MyApp(store: store, classifyBloc: bloc,));
+  runApp(new MyApp(store: store, classifyBloc: bloc, dailyBloC: dailyBloC));
 }
 
 class MyApp extends StatefulWidget {
 
   Store<ReduxStoreState> store;
   ClassifyBloc classifyBloc;
+  DailyBloC dailyBloC;
 
-  MyApp({this.store, this.classifyBloc});
+  MyApp({this.store, this.classifyBloc, this.dailyBloC});
 
   // This widget is the root of your application.
   @override
@@ -46,22 +52,26 @@ class MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return StoreProvider<ReduxStoreState>(
       store: widget.store,
-      child: ClassifyProvider(
-        bloc: widget.classifyBloc,
-        child: new MaterialApp(
-          title: 'Flutter Demo',
-          theme: new ThemeData(
-            // This is the theme of your application.
-            //
-            // Try running your application with "flutter run". You'll see the
-            // application has a blue toolbar. Then, without quitting the app, try
-            // changing the primarySwatch below to Colors.green and then invoke
-            // "hot reload" (press "r" in the console where you ran "flutter run",
-            // or press Run > Flutter Hot Reload in IntelliJ). Notice that the
-            // counter didn't reset back to zero; the application is not restarted.
-            primarySwatch: Colors.blue,
+      child: GankProvider(
+        classifyBloC: widget.classifyBloc,
+        dailyBloC: widget.dailyBloC,
+        child: ClassifyProvider(
+          bloc: widget.classifyBloc,
+          child: new MaterialApp(
+            title: 'Flutter Demo',
+            theme: new ThemeData(
+              // This is the theme of your application.
+              //
+              // Try running your application with "flutter run". You'll see the
+              // application has a blue toolbar. Then, without quitting the app, try
+              // changing the primarySwatch below to Colors.green and then invoke
+              // "hot reload" (press "r" in the console where you ran "flutter run",
+              // or press Run > Flutter Hot Reload in IntelliJ). Notice that the
+              // counter didn't reset back to zero; the application is not restarted.
+              primarySwatch: Colors.blue,
+            ),
+            home: new MainPage(),
           ),
-          home: new MainPage(),
         ),
       ),
     );
@@ -70,6 +80,7 @@ class MyAppState extends State<MyApp> {
   @override
   void dispose() {
     widget.classifyBloc.dispose();
+    widget.dailyBloC.dispose();
     super.dispose();
   }
 }
@@ -86,7 +97,7 @@ class MainContentView {
   Animation<double> _animation;
 
   MainContentView({@required this.content, TickerProvider vsync}) :
-    controller = AnimationController(duration: kThemeAnimationDuration, vsync: vsync) {
+    controller = AnimationController(duration: Duration(milliseconds: 1000), vsync: vsync) {
     _animation = CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn);
   }
 

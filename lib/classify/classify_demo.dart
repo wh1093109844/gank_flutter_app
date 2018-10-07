@@ -45,17 +45,20 @@ class _ClassifyDemoState extends State<ClassifyDemo> with TickerProviderStateMix
     ClassifyProvider.of(context).loadClassifys.add("");
     return StreamBuilder(
         stream: ClassifyProvider.of(context).classifys,
-        initialData: [],
+        initialData: ClassifyWrapper(categoryList: []),
         builder: (context, snapshot) {
           print(snapshot);
           if (snapshot.data != null) {
-            _tabController = new TabController(length: snapshot.data.length, vsync: this);
+            _tabController = new TabController(length: snapshot.data.categoryList.length, initialIndex: snapshot.data.index, vsync: this);
+            _tabController.addListener(() {
+              ClassifyProvider.of(context).classifyChanged.add(_tabController.index);
+            });
           }
           return new Scaffold(
             key: ObjectKey('clasify'),
             appBar: new AppBar(
               title: new Text(widget.category.name),
-              bottom: snapshot.data == null || snapshot.data.isEmpty ? null : new TabBar(tabs: buildTabItem(snapshot.data), controller: _tabController, isScrollable: true, ),
+              bottom: snapshot.data == null || snapshot.data.categoryList.isEmpty ? null : new TabBar(tabs: buildTabItem(snapshot.data.categoryList), controller: _tabController, isScrollable: true, ),
               ),
             body: buildBody(snapshot), // This trailing comma makes auto-formatting nicer for build methods.
             );
@@ -84,10 +87,10 @@ class _ClassifyDemoState extends State<ClassifyDemo> with TickerProviderStateMix
       return Container(
         constraints: BoxConstraints.expand(),
       );
-    } else if (snapshot.data == null || snapshot.data.isEmpty) {
+    } else if (snapshot.data == null || snapshot.data.categoryList.isEmpty) {
       return Center(child: CircularProgressIndicator(),);
     } else {
-      return new TabBarView(children: buildTabContent(snapshot.data), controller: _tabController,);
+      return new TabBarView(children: buildTabContent(snapshot.data.categoryList), controller: _tabController,);
     }
   }
 
