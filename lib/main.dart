@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:gank_flutter_app/bloc_provider.dart';
 import 'package:gank_flutter_app/classify/classify_bloc.dart';
 import 'package:gank_flutter_app/classify/classify_demo.dart';
 import 'package:gank_flutter_app/classify/classify_service.dart';
 import 'package:gank_flutter_app/const.dart' as Const;
 import 'package:gank_flutter_app/entry/gank.dart';
-import 'package:gank_flutter_app/gank_provider.dart';
 import 'package:gank_flutter_app/home/daily_bloc.dart';
 import 'package:gank_flutter_app/home/daily_service.dart';
 import 'package:gank_flutter_app/home/home_demo.dart';
@@ -52,26 +52,12 @@ class MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return StoreProvider<ReduxStoreState>(
       store: widget.store,
-      child: GankProvider(
-        classifyBloC: widget.classifyBloc,
-        dailyBloC: widget.dailyBloC,
-        child: ClassifyProvider(
-          bloc: widget.classifyBloc,
-          child: new MaterialApp(
-            title: 'Flutter Demo',
-            theme: new ThemeData(
-              // This is the theme of your application.
-              //
-              // Try running your application with "flutter run". You'll see the
-              // application has a blue toolbar. Then, without quitting the app, try
-              // changing the primarySwatch below to Colors.green and then invoke
-              // "hot reload" (press "r" in the console where you ran "flutter run",
-              // or press Run > Flutter Hot Reload in IntelliJ). Notice that the
-              // counter didn't reset back to zero; the application is not restarted.
-              primarySwatch: Colors.blue,
-            ),
-            home: new MainPage(),
-          ),
+      child: ClassifyProvider(
+        bloc: widget.classifyBloc,
+        child: new MaterialApp(
+          title: 'Flutter Demo',
+          theme: new ThemeData(primarySwatch: Colors.blue,),
+          home: new MainPage(dailyBloc: widget.dailyBloC, classifyBloc: widget.classifyBloc,),
         ),
       ),
     );
@@ -86,6 +72,10 @@ class MyAppState extends State<MyApp> {
 }
 
 class MainPage extends StatefulWidget {
+  DailyBloC dailyBloc;
+  ClassifyBloc classifyBloc;
+
+  MainPage({Key key, @required this.dailyBloc, @required this.classifyBloc}): super(key: key);
   @override
   _MainPageState createState() => _MainPageState();
 }
@@ -172,14 +162,17 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin{
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: _buildContent(),
-        bottomNavigationBar: BottomNavigationBar(
-          items: generBottomNavigationBarItems(),
-          onTap: handleBottomTap,
-          fixedColor: Colors.black,
-          type: BottomNavigationBarType.fixed,
-        ),);
+    return BlocProvider<DailyBloC>(
+      bloc: widget.dailyBloc,
+      child: Scaffold(
+          body: _buildContent(),
+          bottomNavigationBar: BottomNavigationBar(
+            items: generBottomNavigationBarItems(),
+            onTap: handleBottomTap,
+            fixedColor: Colors.black,
+            type: BottomNavigationBarType.fixed,
+          ),),
+    );
   }
 
   void handleBottomTap(int index) {

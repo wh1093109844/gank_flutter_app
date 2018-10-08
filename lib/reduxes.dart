@@ -23,6 +23,9 @@ Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 Future<List<Gank>> getFavorites() async {
   SharedPreferences prefs = await _prefs;
   String result = prefs.getString(favoritesKey);
+  if (result == null || result == '') {
+    return <Gank>[];
+  }
   List mapList = json.decode(result);
   List<Gank> list = mapList.map((str) => json.decode(str)).map((json) => Gank.fromJson(json)).toList();
   return list;

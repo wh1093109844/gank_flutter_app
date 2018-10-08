@@ -1,38 +1,44 @@
 import 'dart:async';
 
+import 'package:gank_flutter_app/bloc_provider.dart';
 import 'package:gank_flutter_app/entry/daily.dart';
 import 'package:gank_flutter_app/home/daily_service.dart';
 import 'package:intl/intl.dart';
 import 'package:rxdart/rxdart.dart';
 
-class DailyBloC {
+class DailyBloC extends BlocBase {
   var _dateSubject = PublishSubject<DateTime>();
-  var _dailySubject = PublishSubject<DailyWrapper>();
-  var _shouldShowProgress = PublishSubject<bool>();
+  var _dailySubject = BehaviorSubject<DailyWrapper>(seedValue: DailyWrapper(date: DateFormat('yyyy-MM-dd').format(DateTime.now())));
+  var _shouldShowProgress = BehaviorSubject<bool>(seedValue: false);
   var _scrollYChangedSubject = PublishSubject<double>();
   var _listeners = <StreamSubscription>[];
   var _scrollY = 0.0;
 
-  Sink<DateTime> get date => _dateSubject.sink;
-  Stream<DailyWrapper> get daily => _dailySubject.stream;
-  Stream<bool> get shouldShowProgress => _shouldShowProgress.stream;
-  Sink<double> get scrollChanged => _scrollYChangedSubject.sink;
+  Sink<DateTime> get inDate => _dateSubject.sink;
+  Stream<DateTime> get _outDate => _dateSubject.stream;
+  Stream<DailyWrapper> get outDaily => _dailySubject.stream;
+  Sink<DailyWrapper> get _inDaily => _dailySubject.sink;
+  Stream<bool> get outShouldShowProgress => _shouldShowProgress.stream;
+  Sink<bool> get _inShouldShowProgress => _shouldShowProgress.sink;
+  Sink<double> get inScrollChanged => _scrollYChangedSubject.sink;
+  Stream<double> get _outScrollChanged => _scrollYChangedSubject.stream;
 
-  var dateFormat = DateFormat('yyyy-MM-dd');
+  final dateFormat = DateFormat('yyyy-MM-dd');
 
   final DailyService _service;
   DailyBloC({DailyService service}):
       assert(service != null),
       _service = service {
-    _listeners.add(_dateSubject.stream.listen(_handleDateChanged));
-    _listeners.add(_scrollYChangedSubject.stream.listen((scroll) => this._scrollY = scroll));
+    _listeners.add(_outDate.listen(_handleDateChanged));
+    _listeners.add(_outScrollChanged.listen((scroll) => this._scrollY = scroll));
+    _handleDateChanged(DateTime.now());
   }
 
   void _handleDateChanged(DateTime dateTime) async {
-    _shouldShowProgress.sink.add(true);
+    _inShouldShowProgress.add(true);
     Daily daily = await _service.requestDaily(dateTime.year, dateTime.month, dateTime.day);
-    _dailySubject.sink.add(DailyWrapper(date: dateFormat.format(dateTime), daily: daily, scrollY: _scrollY));
-    _shouldShowProgress.sink.add(false);
+    _inDaily.add(DailyWrapper(date: dateFormat.format(dateTime), daily: daily, scrollY: _scrollY));
+    _inShouldShowProgress.add(false);
   }
 
   void dispose() {

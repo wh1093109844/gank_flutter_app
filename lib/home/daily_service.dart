@@ -14,6 +14,7 @@ class DailyService {
       daily = _dailyMap[key];
     } else {
       daily = await _respository.fetchDataByDate(year, month, day);
+      _dailyMap[key] = daily;
     }
     return daily;
   }
