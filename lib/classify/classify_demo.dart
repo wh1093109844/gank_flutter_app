@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gank_flutter_app/bloc_provider.dart';
 import 'package:gank_flutter_app/classify/classify_bloc.dart';
 import 'package:gank_flutter_app/classify/classify_service.dart';
 import 'package:gank_flutter_app/const.dart' as Const;
@@ -20,7 +21,6 @@ class ClassifyDemo extends StatefulWidget {
   @override
   _ClassifyDemoState createState() {
     var state = _ClassifyDemoState();
-//    new ClassifyPresenterImpl(state);
     return state;
   }
 }
@@ -42,16 +42,15 @@ class _ClassifyDemoState extends State<ClassifyDemo> with TickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
-    ClassifyProvider.of(context).loadClassifys.add("");
+    ClassifyBloc bloc = BlocProvider.of<ClassifyBloc>(context);
     return StreamBuilder(
-        stream: ClassifyProvider.of(context).classifys,
-        initialData: ClassifyWrapper(categoryList: []),
+        stream: bloc.outClassifys,
         builder: (context, snapshot) {
           print(snapshot);
           if (snapshot.data != null) {
             _tabController = new TabController(length: snapshot.data.categoryList.length, initialIndex: snapshot.data.index, vsync: this);
             _tabController.addListener(() {
-              ClassifyProvider.of(context).classifyChanged.add(_tabController.index);
+              bloc.inClassifyChanged.add(_tabController.index);
             });
           }
           return new Scaffold(
@@ -98,6 +97,8 @@ class _ClassifyDemoState extends State<ClassifyDemo> with TickerProviderStateMix
     if (gank == null) {
       return;
     }
+    BuildContext buildContext = context;
+    buildContext.visitChildElements(visitor);
     MaterialPageRoute route = null;
     if (gank.type == Const.Const.typeWelfare) {
       route = new MaterialPageRoute(builder: (context) => new ImagePage(gank));
@@ -105,6 +106,15 @@ class _ClassifyDemoState extends State<ClassifyDemo> with TickerProviderStateMix
       route = new MaterialPageRoute(builder: (context) => new WebviewPage(gank.desc, gank.url));
     }
     Navigator.of(context).push(route);
+  }
+
+  void visitor(Element element) {
+    if (element.widget is Hero) {
+      Hero hero = element.widget;
+      print('hero = $hero\ttag = ${hero.tag}');
+    } else {
+      element.visitChildElements(visitor);
+    }
   }
 
   // TODO: implement wantKeepAlive

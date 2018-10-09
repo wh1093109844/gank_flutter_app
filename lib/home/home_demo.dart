@@ -13,8 +13,7 @@ import 'package:intl/intl.dart' as Intl;
 import 'dart:math' as math;
 
 class HomeDemo extends StatefulWidget {
-
-  HomeDemo({Key key}): super(key: key);
+  HomeDemo({Key key}) : super(key: key);
 
   @override
   _HomeDemoState createState() {
@@ -24,16 +23,14 @@ class HomeDemo extends StatefulWidget {
   }
 }
 
-class _HomeDemoState extends State<HomeDemo> with AutomaticKeepAliveClientMixin<HomeDemo>, SingleTickerProviderStateMixin<HomeDemo> {
+class _HomeDemoState extends State<HomeDemo>
+    with AutomaticKeepAliveClientMixin<HomeDemo>, SingleTickerProviderStateMixin<HomeDemo> {
   PageController _pageController;
   ScrollController _scrollController;
   DateTime time = DateTime.now();
   bool reverse = false;
 
   DailyWrapper _wrapper;
-
-  @override
-  HomePresenter presenter;
 
   @override
   void initState() {
@@ -49,29 +46,17 @@ class _HomeDemoState extends State<HomeDemo> with AutomaticKeepAliveClientMixin<
 
   @override
   Widget build(BuildContext context) {
-//    var listViewChildren = _dataList.map((gank) => _buildItemWidget(gank)).toList();
-//    var stackChildren = <Widget>[];
-//    if (_showProgress) {
-//      stackChildren.add(Center(child: CircularProgressIndicator()));
-//    }
-//    Intl.DateFormat dateFormat = Intl.DateFormat('yyyy-MM-dd');
-//    stackChildren.add(Builder(builder: (context) {
-//      return CustomScrollView(
-//        slivers: <Widget>[
-//          new SliverOverlapInjector(handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context)),
-//          SliverList(
-//            delegate: SliverChildListDelegate(listViewChildren),
-//          ),
-//        ],
-//      );
-//    }));
     return Scaffold(
       body: StreamBuilder<DailyWrapper>(
         initialData: DailyWrapper(),
         stream: BlocProvider.of<DailyBloC>(context).outDaily,
         builder: (context, snapshot) {
           bool showSnackBar = false;
-          if (snapshot.data != null && snapshot.data.daily != null && snapshot.data.daily.bannerList != null && snapshot.data?.daily?.bannerList?.isNotEmpty && snapshot.data?.daily?.dataList?.isNotEmpty) {
+          if (snapshot.data != null &&
+              snapshot.data.daily != null &&
+              snapshot.data.daily.bannerList != null &&
+              snapshot.data?.daily?.bannerList?.isNotEmpty &&
+              snapshot.data?.daily?.dataList?.isNotEmpty) {
             _wrapper = snapshot.data;
           } else if (snapshot.connectionState == ConnectionState.active) {
             showSnackBar = true;
@@ -79,19 +64,20 @@ class _HomeDemoState extends State<HomeDemo> with AutomaticKeepAliveClientMixin<
           var children = <Widget>[];
           var count = _wrapper?.daily?.dataList?.length ?? 0;
           if (count > 0) {
-            children.add(Builder(builder: (context) {
-              return CustomScrollView(
-                slivers: <Widget>[
-                  new SliverOverlapInjector(handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context)),
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      return _buildItemWidget(_wrapper?.daily?.dataList[index]);
-                    },
-                                                           childCount: _wrapper?.daily?.dataList?.length ?? 0),
+            children.add(Builder(
+              builder: (context) {
+                return CustomScrollView(
+                  slivers: <Widget>[
+                    new SliverOverlapInjector(handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context)),
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        return _buildItemWidget(_wrapper?.daily?.dataList[index]);
+                      }, childCount: _wrapper?.daily?.dataList?.length ?? 0),
                     )
-                ],
+                  ],
                 );
-            },));
+              },
+            ));
           } else {
             children.add(Text('empty'));
           }
@@ -99,7 +85,7 @@ class _HomeDemoState extends State<HomeDemo> with AutomaticKeepAliveClientMixin<
             initScroller(_wrapper.scrollY);
           }
           return NestedScrollView(
-            controller: _scrollController,
+              controller: _scrollController,
               headerSliverBuilder: (context, innerBoxIsScrollled) {
                 return <Widget>[
                   SliverOverlapAbsorber(
@@ -126,7 +112,7 @@ class _HomeDemoState extends State<HomeDemo> with AutomaticKeepAliveClientMixin<
                             var today = DateTime.now();
                             var last = DateTime.parse('1970-01-01');
                             showDatePicker(context: context, initialDate: today, firstDate: last, lastDate: today)
-                              .then((DateTime date) {
+                                .then((DateTime date) {
                               if (date == null) {
                                 return;
                               }
@@ -140,27 +126,28 @@ class _HomeDemoState extends State<HomeDemo> with AutomaticKeepAliveClientMixin<
                 ];
               },
               body: StreamBuilder<bool>(
-                stream: BlocProvider.of<DailyBloC>(context).outShouldShowProgress,
-                initialData: false,
-                builder: (context, snapshot) {
-                  if (snapshot.data) {
-                    children.add(Center(child: CircularProgressIndicator()));
-                  }
-                  return Stack(
-                    children: children,
-                  );
-                }
-              ));
+                  stream: BlocProvider.of<DailyBloC>(context).outShouldShowProgress,
+                  initialData: false,
+                  builder: (context, snapshot) {
+                    if (snapshot.data) {
+                      children.add(Center(child: CircularProgressIndicator()));
+                    }
+                    return Stack(
+                      children: children,
+                    );
+                  }));
         },
       ),
     );
   }
 
   void initScroller(scrollY) {
-    _scrollController = ScrollController(initialScrollOffset: scrollY,);
+    _scrollController = ScrollController(
+      initialScrollOffset: scrollY,
+    );
     _scrollController.addListener(() => BlocProvider.of<DailyBloC>(context).inScrollChanged.add(_scrollController.position.pixels));
   }
-  
+
   Widget _buildBanner() {
     if ((_wrapper?.daily == null || _wrapper?.daily?.bannerList == null || _wrapper?.daily?.bannerList?.isEmpty) ?? true) {
       return SizedBox();
@@ -203,13 +190,15 @@ class _HomeDemoState extends State<HomeDemo> with AutomaticKeepAliveClientMixin<
       return InkWell(
           child: PhotoHolder(
             gank.url,
+            tag: gank.id,
             fit: BoxFit.cover,
           ),
           onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => ImagePage(gank))));
     } else {
       return InkWell(
         child: TextCard(gank),
-        onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => WebviewPage(gank.desc, gank.url))),
+        onTap: () =>
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => WebviewPage(gank.desc, gank.url))),
       );
     }
   }

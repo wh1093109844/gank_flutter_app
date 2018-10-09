@@ -52,7 +52,7 @@ class MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return StoreProvider<ReduxStoreState>(
       store: widget.store,
-      child: ClassifyProvider(
+      child: BlocProvider<ClassifyBloc>(
         bloc: widget.classifyBloc,
         child: new MaterialApp(
           title: 'Flutter Demo',
@@ -88,7 +88,7 @@ class MainContentView {
 
   MainContentView({@required this.content, TickerProvider vsync}) :
     controller = AnimationController(duration: Duration(milliseconds: 1000), vsync: vsync) {
-    _animation = CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn);
+    _animation = CurvedAnimation(parent: controller, curve: Curves.linear);
   }
 
 
@@ -149,15 +149,17 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin{
   }
 
   Widget _buildContent() {
-    List<FadeTransition> list = widgets.map((view) => view.transition()).toList();
-    list.sort((FadeTransition a, FadeTransition b) {
-      final Animation<double> aAnimation = a.opacity;
-      final Animation<double> bAnimation = b.opacity;
-      final double aValue = aAnimation.value;
-      final double bValue = bAnimation.value;
-      return aValue.compareTo(bValue);
-    });
-    return Stack(children: list,);
+//    List<FadeTransition> list = widgets.map((view) => view.transition()).where((transition) => transition.opacity.value != 0).toList();
+//    list.sort((FadeTransition a, FadeTransition b) {
+//      final Animation<double> aAnimation = a.opacity;
+//      final Animation<double> bAnimation = b.opacity;
+//      final double aValue = aAnimation.value;
+//      final double bValue = bAnimation.value;
+//      return aValue.compareTo(bValue);
+//    });
+//    print(list);
+//    return Stack(children: list,);
+    return widgets[current].content;
   }
 
   @override
@@ -177,9 +179,9 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin{
 
   void handleBottomTap(int index) {
     setState(() {
-      widgets[current].controller.reverse();
+//      widgets[current].controller.reverse();
       current = index;
-      widgets[current].controller.forward();
+//      widgets[current].controller.forward();
     });
   }
 

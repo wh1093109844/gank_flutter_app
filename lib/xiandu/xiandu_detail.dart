@@ -73,7 +73,7 @@ class XianduDetailState extends State<XianduDetail> implements XianduDetailView{
                 automaticallyImplyLeading: true,
                 pinned: true,
                 flexibleSpace: FlexibleSpaceBar(
-                  background: PhotoHolder(widget.xiandu.cover ?? '', fit: BoxFit.cover,),
+                  background: PhotoHolder(widget.xiandu.cover ?? '', fit: BoxFit.cover),
                   title: Text(widget.xiandu.title ?? '', maxLines: 1, overflow: TextOverflow.ellipsis,),
                 ),
               ),

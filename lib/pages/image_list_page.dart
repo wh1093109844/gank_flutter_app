@@ -75,6 +75,7 @@ class _ImageListPageState extends AbsListPageState<ImageListPage> {
       child: InkWell(
         child: PhotoHolder(
           gank.url,
+          tag: gank.id,
           fit: BoxFit.cover,
           width: imageWidth,
           height: imageHeight,

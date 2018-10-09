@@ -18,7 +18,7 @@ class ImagePage extends StatelessWidget {
         child: new Stack(
           children: <Widget>[
             Center(
-              child: new PhotoHolder(gank.url),
+              child: new PhotoHolder(gank.url, tag: gank.id,),
             ),
             new Positioned(
               child: new Container(

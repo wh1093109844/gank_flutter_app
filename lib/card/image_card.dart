@@ -28,7 +28,7 @@ class ImageCardState extends State<ImageCard> {
     TextStyle style = new TextStyle(color: Colors.white, fontSize: 12.0);
     DateFormat format = DateFormat('yyyy-MM-dd');
     List<Widget> widgetList = [];
-    widgetList.add(new PhotoHolder(widget.gank.url));
+    widgetList.add(new PhotoHolder(widget.gank.url, tag: widget.gank.id,));
     if (widget.gank.who != null && widget.gank.who.isNotEmpty) {
       widgetList.add(new Positioned(
         child: new Container(
@@ -84,12 +84,13 @@ class PhotoHolder extends StatelessWidget {
   BoxFit fit;
   double width;
   double height;
-  PhotoHolder(this.photo, {this.fit = BoxFit.contain, this.width, this.height});
+  Object tag;
+  PhotoHolder(this.photo, {this.fit = BoxFit.contain, this.width, this.height, this.tag});
 
   @override
   Widget build(BuildContext context) {
     return new Hero(
-        tag: photo,
+        tag: tag,
         child: Material(
             color: Colors.transparent,
             child: FadeInImage.assetNetwork(

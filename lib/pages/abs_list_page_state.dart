@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gank_flutter_app/bloc_provider.dart';
 import 'package:gank_flutter_app/classify/classify_bloc.dart';
 import 'package:gank_flutter_app/classify/classify_page.dart';
 import 'package:gank_flutter_app/contrack.dart';
@@ -35,11 +36,9 @@ abstract class AbsListPageState<T extends AbsListPage> extends State<T> with Aut
 
   @override
   Widget build(BuildContext context) {
-    if (_page == null) {
-      ClassifyProvider.of(context).loadGankListIndex(widget.type).add(1);
-    }
+    ClassifyBloc bloc = BlocProvider.of<ClassifyBloc>(context);
     return StreamBuilder<ClassifyPage>(
-      stream: ClassifyProvider.of(context).gankStream(widget.type),
+      stream: bloc.outGankStream(widget.type),
       builder: (context, snapshot) {
         var list = <Widget>[];
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -64,7 +63,7 @@ abstract class AbsListPageState<T extends AbsListPage> extends State<T> with Aut
         }
         list.add(StreamBuilder(
           initialData: false,
-          stream: ClassifyProvider.of(context).shouldShowProgress(widget.type),
+          stream: bloc.outShouldShowProgress(widget.type),
           builder: (context, snapshot) {
             if (snapshot.data) {
               return Center(child: CircularProgressIndicator());
@@ -79,11 +78,12 @@ abstract class AbsListPageState<T extends AbsListPage> extends State<T> with Aut
   }
 
   void initScrollController() {
+    ClassifyBloc bloc = BlocProvider.of<ClassifyBloc>(context);
     scrollController = new ScrollController(initialScrollOffset: _page == null || _page.scrollY == null ? 0.0 : _page.scrollY);
     scrollController.addListener(() {
-      ClassifyProvider.of(context).scrolledChanged(widget.type).add(scrollController.position.pixels);
+      bloc.inScrolledChanged(widget.type).add(scrollController.position.pixels);
       if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
-        ClassifyProvider.of(context).loadGankListIndex(widget.type).add(_page?.pageNum + 1);
+        bloc.inLoadGankList(widget.type).add(_page?.pageNum + 1);
       }
     });
   }
