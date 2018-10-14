@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -12,7 +14,9 @@ import 'package:gank_flutter_app/home/daily_service.dart';
 import 'package:gank_flutter_app/home/home_demo.dart';
 import 'package:gank_flutter_app/other/other_demo.dart';
 import 'package:gank_flutter_app/reduxes.dart';
+import 'package:gank_flutter_app/xiandu/xiandu_bloc.dart';
 import 'package:gank_flutter_app/xiandu/xiandu_demo.dart';
+import 'package:gank_flutter_app/xiandu/xiandu_service.dart';
 import 'package:redux/redux.dart';
 
 void main() {
@@ -20,9 +24,11 @@ void main() {
   final DailyService dailyService = DailyService();
   final ClassifyBloc bloc = ClassifyBloc(service);
   final DailyBloC dailyBloC = DailyBloC(service: dailyService);
+  final XianduService xianduService = XianduService();
+  final XianduBloc xianduBloc = XianduBloc(service: xianduService);
   final store = Store<ReduxStoreState>(storeStateRedux, initialState: ReduxStoreState(favorites: []));
   debugInstrumentationEnabled = true;
-  runApp(new MyApp(store: store, classifyBloc: bloc, dailyBloC: dailyBloC));
+  runApp(new MyApp(store: store, classifyBloc: bloc, dailyBloC: dailyBloC, xianduBloc: xianduBloc,));
 }
 
 class MyApp extends StatefulWidget {
@@ -30,8 +36,9 @@ class MyApp extends StatefulWidget {
   Store<ReduxStoreState> store;
   ClassifyBloc classifyBloc;
   DailyBloC dailyBloC;
+  XianduBloc xianduBloc;
 
-  MyApp({this.store, this.classifyBloc, this.dailyBloC});
+  MyApp({this.store, this.classifyBloc, this.dailyBloC, this.xianduBloc});
 
   // This widget is the root of your application.
   @override
@@ -50,16 +57,19 @@ class MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return StoreProvider<ReduxStoreState>(
-      store: widget.store,
-      child: BlocProvider<ClassifyBloc>(
-        bloc: widget.classifyBloc,
-        child: new MaterialApp(
-          title: 'Flutter Demo',
-          theme: new ThemeData(primarySwatch: Colors.blue,),
-          home: new MainPage(dailyBloc: widget.dailyBloC, classifyBloc: widget.classifyBloc,),
+    return BlocProvider<XianduBloc>(
+        bloc: widget.xianduBloc,
+        child: StoreProvider<ReduxStoreState>(
+          store: widget.store,
+          child: BlocProvider<ClassifyBloc>(
+            bloc: widget.classifyBloc,
+            child: new MaterialApp(
+              title: 'Flutter Demo',
+              theme: new ThemeData(primarySwatch: Colors.blue,),
+              home: new MainPage(dailyBloc: widget.dailyBloC, classifyBloc: widget.classifyBloc,),
+            ),
+          ),
         ),
-      ),
     );
   }
 
@@ -105,6 +115,10 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin{
   int current = 0;
   List<MainContentView> widgets;
 
+  static const int BACK_TIME = 2000;
+
+  int _onTouchBackTime = 0;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -148,6 +162,19 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin{
     });
   }
 
+  Future<bool> onWillPop(BuildContext context) async {
+    var touchTime = DateTime.now().millisecondsSinceEpoch;
+    print('preTouch: $_onTouchBackTime\ttouch: $touchTime');
+    if (touchTime - _onTouchBackTime < BACK_TIME) {
+      return true;
+    } else {
+      _onTouchBackTime = touchTime;
+      Scaffold.of(context).showSnackBar(SnackBar(content: Text('请再点击一次返回键，退出程序'), ));
+      return false;
+    }
+  }
+
+
   Widget _buildContent() {
 //    List<FadeTransition> list = widgets.map((view) => view.transition()).where((transition) => transition.opacity.value != 0).toList();
 //    list.sort((FadeTransition a, FadeTransition b) {
@@ -165,15 +192,20 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin{
   @override
   Widget build(BuildContext context) {
     return BlocProvider<DailyBloC>(
-      bloc: widget.dailyBloc,
-      child: Scaffold(
-          body: _buildContent(),
-          bottomNavigationBar: BottomNavigationBar(
-            items: generBottomNavigationBarItems(),
-            onTap: handleBottomTap,
-            fixedColor: Colors.black,
-            type: BottomNavigationBarType.fixed,
-          ),),
+        bloc: widget.dailyBloc,
+        child: Scaffold(
+            body: Builder(
+              builder: (context) => WillPopScope(
+                onWillPop: () => onWillPop(context),
+                child: _buildContent(),
+              ),
+            ),
+            bottomNavigationBar: BottomNavigationBar(
+              items: generBottomNavigationBarItems(),
+              onTap: handleBottomTap,
+              fixedColor: Colors.black,
+              type: BottomNavigationBarType.fixed,
+            ),),
     );
   }
 

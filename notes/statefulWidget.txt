@@ -1,0 +1,34 @@
+StatefulWidget 
+	--createElement => StatefulElement
+	--createState => dev
+	
+StatefulElement: ComponentElement
+	--construct => widget.createState
+	--build => widget.state.build
+	--firstBuild => widget.state.initState
+					widget.state.didChangeDependencies
+	--update => widget.state.didUpdateWidget
+				rebuild
+	--unmount => widget.state.dispose
+	
+ComponentElement: Element
+	--mount => rebuild
+	--performRebuild => build
+						updateChid
+	--visitChildren => visitor(_child)
+	--forgetChild => _child = null
+Element: DiagnosticableTree, BuildContext
+	--renderObject => 向下寻找RenderObjectElement，并return element.renderObject
+	--visitChildElments => visitChildren
+	**updateChild => 比较2个Element，更新element树
+					 /// The following table summarizes the above:
+					 ///
+					 /// |                     | **newWidget == null**  | **newWidget != null**   |
+					 /// | :-----------------: | :--------------------- | :---------------------- |
+					 /// |  **child == null**  |  Returns null.         |  Returns new [Element]. |
+					 /// |  **child != null**  |  Old child is removed, returns null. | Old child updated if possible, returns child or new [Element]. |
+					inflateWidget
+	
+	
+	
+					

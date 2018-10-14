@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:gank_flutter_app/bloc_provider.dart';
 import 'package:gank_flutter_app/contrack.dart';
 import 'package:gank_flutter_app/entry/gank.dart';
 import 'package:gank_flutter_app/entry/xiandu.dart';
@@ -8,8 +9,11 @@ import 'package:gank_flutter_app/entry/xiandu_child_type.dart';
 import 'package:gank_flutter_app/entry/xiandu_main_type.dart';
 import 'package:gank_flutter_app/pages/webview_page.dart';
 import 'package:gank_flutter_app/presenter/xiandu_presenter_impl.dart';
+import 'package:gank_flutter_app/xiandu/xiandu_bloc.dart';
 import 'package:gank_flutter_app/xiandu/xiandu_detail.dart';
 import 'dart:convert';
+
+import 'package:gank_flutter_app/xiandu/xiandu_detail_bloc.dart';
 
 class XianduDemo extends StatefulWidget {
 
@@ -18,76 +22,88 @@ class XianduDemo extends StatefulWidget {
   @override
   XianduDemoState createState() {
     XianduDemoState state = XianduDemoState();
-    XianduPresenterImpl(state);
+//    XianduPresenterImpl(state);
     return state;
   }
 }
 
-class XianduDemoState extends State<XianduDemo> with AutomaticKeepAliveClientMixin<XianduDemo> implements XianduTypeView {
-
-  bool _isShow = false;
-  List<XianduMainType> _mainTypeList = [];
-  List<XianduChildType> _childTypeList = [];
-  List<Xiandu> _xianduList = [];
-  XianduMainType mainType;
-  XianduChildType childType;
-  Xiandu xiandu;
+class XianduDemoState extends State<XianduDemo> with AutomaticKeepAliveClientMixin<XianduDemo> {
 
   ScrollController _controller;
-
-  @override
-  XianduPresenter presenter;
+  bool shouldHandleBackEvent = false;
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> stackWidgets = [buildListView()];
-    if (_isShow) {
-      stackWidgets.add(Center(child: CircularProgressIndicator()));
-    }
+    XianduBloc bloc = BlocProvider.of<XianduBloc>(context);
     return WillPopScope(
       key: ObjectKey('xiandu'),
       onWillPop: handlePopScope,
-      child: new Scaffold(
-        appBar: buildAppBar(),
-        body: Container(
-          child: Stack(
-            children: stackWidgets,
-          ),
-        ),
+      child: StreamBuilder<TypeWrapper>(
+        stream: bloc.outCurrent,
+        builder: (context, snapshot) {
+          return new Scaffold(
+            appBar: buildAppBar(snapshot.data),
+            body: Container(
+              child: Stack(
+                children: <Widget>[
+                  StreamBuilder<List>(
+                    stream: bloc.outList,
+                    builder: (context, snapshot) {
+                      if (snapshot.data?.isEmpty ?? true) {
+                        return Text('empty');
+                      }
+                      return ListView.builder(
+                        itemBuilder: (context, index) => buildItem(snapshot.data[index]),
+                        itemCount: snapshot.data?.length ?? 0,
+                        controller: _controller,
+                      );
+                    },
+                  ),
+                  StreamBuilder<bool>(
+                    stream: bloc.outShouldShowProgress,
+                    initialData: false,
+                    builder: (context, snapshot) {
+                      if (snapshot.data) {
+                        return Center(child: CircularProgressIndicator(),);
+                      } else {
+                        return SizedBox(width: 0.0, height: 0.0,);
+                      }
+                    },
+                  )
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
 
   Future<bool> handlePopScope() async {
-    if (mainType == null) {
-      return true;
-    } else if (childType == null){
-
-      setState(() {
-        mainType = null;
-      });
+    if (shouldHandleBackEvent) {
+      BlocProvider
+        .of<XianduBloc>(context)
+        .inPop
+        .add(null);
       return false;
-    } else {
-      setState(() {
-        childType = null;
-      });
     }
+    return true;
   }
 
-  AppBar buildAppBar() {
-    if (mainType == null) {
+  AppBar buildAppBar(TypeWrapper wrapper) {
+    if (wrapper == null) {
+      return null;
+    }
+    shouldHandleBackEvent = true;
+    if (wrapper.mainType == null) {
+      shouldHandleBackEvent = false;
       return AppBar(
         title: Text('闲读'),
       );
-    } else if (childType == null){
+    } else if (wrapper.childType == null){
       return AppBar(
-        title: Text(mainType.name ?? ''),
-        leading: IconButton(icon: Icon(Icons.arrow_back, color: Colors.white,), onPressed: () {
-          setState(() {
-            _childTypeList = [];
-            mainType = null;
-          });
-        }),
+        title: Text(wrapper.mainType.name ?? ''),
+        leading: _leading(),
       );
     } else {
       return AppBar(
@@ -95,40 +111,20 @@ class XianduDemoState extends State<XianduDemo> with AutomaticKeepAliveClientMix
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(childType.title ?? ''),
-            Text(mainType.name ?? '', style: TextStyle(fontSize: 10.0),)
+            Text(wrapper.childType.title ?? ''),
+            Text(wrapper.mainType.name ?? '', style: TextStyle(fontSize: 10.0),)
           ],
         ),
-        leading: IconButton(icon: Icon(Icons.arrow_back, color: Colors.white,), onPressed: () {
-          setState(() {
-            childType = null;
-            _xianduList = [];
-          });
-        }),
+        leading: _leading(),
       );
     }
   }
 
-  Widget buildListView() {
-    return ListView(
-      children: buildWidgetList(mainType == null ? _mainTypeList : childType == null ? _childTypeList : _xianduList),
-      controller: _controller,
+  Widget _leading() {
+    return IconButton(
+      icon: Icon(Icons.arrow_back, color: Colors.white,),
+      onPressed: () => handlePopScope(),
     );
-  }
-
-  List<Widget> buildWidgetList(List list) {
-    List<Widget> widgetList = [];
-    if (list == null || list.isEmpty) {
-      return widgetList;
-    }
-    final int length = list.length;
-    for (int i = 0; i < length; i++) {
-      widgetList.add(buildItem(list[i]));
-      if (i != length - 1) {
-        widgetList.add(Divider(height: 1.0,));
-      }
-    }
-    return widgetList;
   }
 
   Widget buildItem(type) {
@@ -144,44 +140,55 @@ class XianduDemoState extends State<XianduDemo> with AutomaticKeepAliveClientMix
   }
 
   Widget buildMainTypeItem(XianduMainType type) {
-    return ListTile(
-      title: Text(type.name),
-      onTap: () {
-        mainType = type;
-        _childTypeList = [];
-        presenter.fetchChildTypeList(mainType.en_name);
-      }
+    return Column(
+      children: <Widget>[
+        ListTile(
+          title: Text(type.name),
+          onTap: () {
+            BlocProvider.of<XianduBloc>(context).inLoadChild.add(type);
+          }
+        ),
+        Divider(height: 1.0,)
+      ],
     );
   }
 
   Widget buildChildTypeItem(XianduChildType type) {
-    return ListTile(
-      title: Text(type.title),
-      leading: Image.network(type.icon, height: 60.0, width: 60.0,),
-      subtitle: Text(type.id),
-      onTap: () {
-        childType = type;
-        presenter.fetchXianduList(type.id);
-      },
+    return Column(
+      children: <Widget>[
+        ListTile(
+          title: Text(type.title),
+          leading: Image.network(type.icon, height: 60.0, width: 60.0,),
+          subtitle: Text(type.id),
+          onTap: () {
+            BlocProvider.of<XianduBloc>(context).inLoadChild.add(type);
+          },
+        ),
+        Divider(height: 1.0,)
+      ],
     );
   }
 
   Widget buildXianduItem(Xiandu xiandu) {
-    return ListTile(
-      title: Text(xiandu.title),
-      subtitle: Text(xiandu.site.name),
-      contentPadding: EdgeInsets.all(5.0),
-      trailing: (xiandu.cover == null || xiandu.cover == '' || xiandu.cover == 'none') ? null : Image.network(xiandu.cover, height: 60.0, width: 100.0,),
-      isThreeLine: true,
-      onTap: () {
-//        Navigator.of(context).push(MaterialPageRoute(builder: (context) => XianduDetail(xiandu)));
-        this.xiandu = xiandu;
-        if (xiandu.content == null || xiandu.content == '') {
-          setUrl(xiandu.url);
-        } else {
-          presenter.saveHtml(xiandu.content ?? '');
-        }
-      },
+    return Column(
+      children: <Widget>[
+        ListTile(
+          title: Text(xiandu.title),
+          subtitle: Text(xiandu.site.name),
+          contentPadding: EdgeInsets.all(5.0),
+          trailing: (xiandu.cover == null || xiandu.cover == '' || xiandu.cover == 'none') ? null : Image.network(xiandu.cover, height: 60.0, width: 100.0,),
+          isThreeLine: true,
+          onTap: () {
+            Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) =>
+                BlocProvider<XianduDetailBloc>(
+                  bloc: XianduDetailBloc(xiandu: xiandu),
+                  child: XianduDetail(),
+                )));
+          },
+        ),
+        Divider(height: 1.0,)
+      ],
     );
   }
 
@@ -191,12 +198,12 @@ class XianduDemoState extends State<XianduDemo> with AutomaticKeepAliveClientMix
     super.initState();
     _controller = ScrollController();
     _controller.addListener(handleScroll);
-    presenter.start();
+//    presenter.start();
   }
 
   void handleScroll() {
-    if (childType != null && _controller.position.pixels == _controller.position.maxScrollExtent) {
-      presenter.fetchXianduList(childType.id);
+    if (_controller.position.pixels == _controller.position.maxScrollExtent) {
+      BlocProvider.of<XianduBloc>(context).inLoadList.add(0);
     }
   }
 
@@ -217,60 +224,6 @@ class XianduDemoState extends State<XianduDemo> with AutomaticKeepAliveClientMix
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
   }
-
-  @override
-  void setMainTypeList(List<XianduMainType> list) {
-    if (mounted) {
-      setState(() {
-        _mainTypeList = list;
-      });
-    } else {
-      _mainTypeList = list;
-    }
-  }
-
-  @override
-  void setPresenter(XianduPresenter presenter) {
-    this.presenter = presenter;
-  }
-
-  @override
-  void showDialog(bool isShow) {
-    if (mounted) {
-      setState(() {
-        _isShow = isShow;
-      });
-    }
-  }
-
-  @override
-  void showMessage(String message) {
-    Scaffold.of(context).showSnackBar(SnackBar(content: Text(message)));
-  }
-
-  @override
-  void setChildTypeList(List<XianduChildType> list) {
-    if (mounted) {
-      setState(() {
-        _childTypeList = list;
-      });
-    } else {
-      _childTypeList = list;
-    }
-  }
-
-  @override
-  void setXianduList(List<Xiandu> list) {
-    setState(() {
-      _xianduList = list;
-    });
-  }
-
-  @override
-  void setUrl(String url) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) => WebviewPage(xiandu.title, url)));
-  }
-
   // TODO: implement wantKeepAlive
   @override
   bool get wantKeepAlive => true;

@@ -1,6 +1,7 @@
 package com.example.gank.gankflutterapp
 
 import android.os.Bundle
+import android.text.Html
 
 import io.flutter.app.FlutterActivity
 import io.flutter.plugins.GeneratedPluginRegistrant
