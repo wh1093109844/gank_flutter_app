@@ -27,8 +27,18 @@ Element: DiagnosticableTree, BuildContext
 					 /// | :-----------------: | :--------------------- | :---------------------- |
 					 /// |  **child == null**  |  Returns null.         |  Returns new [Element]. |
 					 /// |  **child != null**  |  Old child is removed, returns null. | Old child updated if possible, returns child or new [Element]. |
-					inflateWidget
 	
+	--inflateWidget => widget可以更新，调用updateChild，否则调用newWidget.createElement()创建新的Element并调用element.mount()方法
 	
-	
-					
+StatefulWidget流程：
+StatefulWidget.createElement，创建StatefulElment,在实例化StatefulElment的时候，会调用StatefulWidget.createState()，创建state；
+
+程序入口再main()中的runApp(),所以先看runApp()的实现：
+void runApp(Widget app) {
+  WidgetsFlutterBinding.ensureInitialized()
+    ..attachRootWidget(app)
+    ..scheduleWarmUpFrame();
+}
+
+再mian()方法中运行runApp()方法，runApp()中调用了WidgetsFlutterBinding.attachRootWidget(app)方法，在attachRootWidget中，会创建RenderObjectToWidgetAdapter作为根Widget，紧接着会执行RenderObjectToWidget.attachToRenderTree()方法；再看看该方法的实现，如果element == null，就调用createElement 生成element，并调用element.mount()方法；在mount方法中，会调用_rebuild方法，_rebuild方法会调用Element.updateChild该方法有2个参数，BuildOwner和RenderObjectToWidgetElement，其中RenderObjectToWidgetElement是跟RenderObjectToWidget对应的Element，
+runApp() -> WidgetsFlutterBinding.attachRootWidget(app) -> RenderObjectToWidgetAdapter.attachToRenderTree(buildOwner, renderViewElement) -> widget.createElement(), element.mount()
